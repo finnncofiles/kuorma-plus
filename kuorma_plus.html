@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>KUORMA+ – Johtajan kuormanhallinnan työkalu</title>
+<style>
+body {font-family: system-ui, Arial, sans-serif; background:#0b0c10; color:#e8e8ea; margin:0;}
+header {background:#11131a; padding:16px; border-bottom:1px solid #222;}
+main {padding:16px; max-width:900px; margin:auto;}
+.card {background:#11131a; border:1px solid #222; border-radius:12px; padding:14px; margin-bottom:12px;}
+label {display:block; margin-top:10px; font-size:14px;}
+select {width:100%; padding:10px; border-radius:10px; background:#0c0f16; color:white; border:1px solid #333;}
+.result {font-size:22px; font-weight:700;}
+.status {padding:10px; border-radius:10px; margin-top:10px;}
+.ok {background:#163;}
+.mid {background:#665200;}
+.high {background:#663300;}
+.crit {background:#661111;}
+small {opacity:0.8;}
+</style>
+</head>
+<body>
+
+<header>
+<h2>KUORMA+ – Kokonaiskuorman johtamisen päätöstyökalu</h2>
+<small>Työkalu auttaa johtajaa arvioimaan sotilaan kokonaiskuormitusta ennen tehtävänantoa.</small>
+</header>
+
+<main>
+
+<div class="card">
+<b>Mikä on KUORMA+?</b><br><br>
+KUORMA+ on johtajan apuväline, joka muuttaa kuorman hallinnan yksittäisestä varustekysymyksestä
+järjestelmälliseksi päätöksenteoksi. Se ei mittaa kilogrammoja, vaan operatiivista rasitusta,
+joka syntyy tehtävästä, huollosta, ympäristöstä ja toiminnan riskitasosta.
+</div>
+
+<div class="card">
+<div class="result">Kokonaispisteet: <span id="total">0</span> / 31</div>
+<div id="interpretation" class="status ok">Valitse arvot aloittaaksesi.</div>
+</div>
+
+<div class="card">
+<label>Liikevaatimus</label>
+<select id="L">
+<option value="0">Valitse</option>
+<option value="1">1 – Paikallaan / lyhyet siirtymät</option>
+<option value="3">3 – Sekamuotoinen liike</option>
+<option value="5">5 – Pitkä siirtymä / korkea tempo</option>
+</select>
+
+<label>Huoltovarmuus</label>
+<select id="H">
+<option value="0">Valitse</option>
+<option value="1">1 – Täydennys varma &lt; 24 h</option>
+<option value="3">3 – Epävarma 24–72 h</option>
+<option value="5">5 – Ei varmaa huoltoa &gt; 72 h</option>
+</select>
+
+<label>Maasto</label>
+<select id="M">
+<option value="0">Valitse</option>
+<option value="1">1 – Tieverkko / kuljetustuki lähellä</option>
+<option value="3">3 – Sekamaasto</option>
+<option value="5">5 – Metsä, suo tai saaristo</option>
+</select>
+
+<label>Kontaktiriski</label>
+<select id="K">
+<option value="0">Valitse</option>
+<option value="1">1 – Matala</option>
+<option value="3">3 – Keskitaso</option>
+<option value="5">5 – Korkea</option>
+</select>
+
+<label>Sää ja fysiologinen rasitus</label>
+<select id="S">
+<option value="0">Valitse</option>
+<option value="1">1 – Suotuisa sää ja rasitus</option>
+<option value="3">3 – Normaali kuormitus</option>
+<option value="5">5 – Kylmä, kuuma, märkä tai raskas rasitus</option>
+</select>
+
+<label>Tehtäväprofiili</label>
+<select id="T">
+<option value="0">Valitse</option>
+<option value="0">0 – Puolustus / asema</option>
+<option value="1">1 – Viivytys / suojaus</option>
+<option value="2">2 – Hyökkäys / raivaus</option>
+<option value="3">3 – Erikoistehtävä</option>
+</select>
+
+<label>Ympäristö</label>
+<select id="Y">
+<option value="0">Valitse</option>
+<option value="0">0 – Avoin maasto</option>
+<option value="1">1 – Metsä tai harva rakennettu alue</option>
+<option value="2">2 – Tiheä rakennettu alue</option>
+<option value="3">3 – Rakennettu tai saaristo talvella</option>
+</select>
+</div>
+
+<div class="card">
+<b>Tulkintaohje</b><br><br>
+6–10: Normaali varustus sallittu<br>
+11–15: Kuormaa optimoitava<br>
+16–20: Aggressiivinen kevennys<br>
+21–31: Minimikuorma, vain taistelukriittinen varustus
+</div>
+
+<div class="card">
+<b>Johtajan muistilista</b><br><br>
+• KUORMA+ ei korvaa johtajan harkintaa, vaan tukee sitä<br>
+• Mitä korkeampi pistemäärä, sitä aktiivisemmin kuormaa tulee karsia<br>
+• Kuorma on seurausta päätöksistä, ei vain varusteista<br>
+• Huono huolto ja epäselvä tehtävä näkyvät sotilaan selässä
+</div>
+
+</main>
+
+<script>
+const ids=["L","H","M","K","S","T","Y"];
+function val(id){return parseInt(document.getElementById(id).value)||0;}
+function update(){
+let total=ids.reduce((s,i)=>s+val(i),0);
+document.getElementById("total").innerText=total;
+let el=document.getElementById("interpretation");
+if(total==0){el.className="status ok";el.innerText="Valitse arvot aloittaaksesi.";return;}
+if(total<=10){el.className="status ok";el.innerText="Normaali varustus sallittu";}
+else if(total<=15){el.className="status mid";el.innerText="Kuormaa tulee optimoida";}
+else if(total<=20){el.className="status high";el.innerText="Aggressiivinen kevennys tarpeen";}
+else{el.className="status crit";el.innerText="Minimikuorma – vain taistelukriittinen varustus";}
+}
+ids.forEach(i=>document.getElementById(i).addEventListener("change",update));
+</script>
+
+</body>
+</html>
