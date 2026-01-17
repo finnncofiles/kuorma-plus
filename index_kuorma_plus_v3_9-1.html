@@ -1,0 +1,808 @@
+<!doctype html>
+<html lang="fi">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>KUORMA+ 3.9</title>
+<style>
+:root{
+  --bg:#0b0c10; --card:#11131a; --card2:#0c0f16;
+  --border:#1f2330; --border2:#2a2f3f;
+  --text:#eaeaf0; --muted:rgba(234,234,240,.78); --muted2:rgba(234,234,240,.62);
+  --ok:rgba(46,204,113,.16); --mid:rgba(241,196,15,.16);
+  --high:rgba(230,126,34,.16); --crit:rgba(231,76,60,.16);
+  --shadow:0 10px 30px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box}
+body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;background:var(--bg);color:var(--text);margin:0}
+header{
+  background:linear-gradient(180deg,#11131a 0%, #0e1016 100%);
+  padding:14px 14px 12px;
+  border-bottom:1px solid var(--border);
+  position:sticky; top:0; z-index:10;
+}
+main{max-width:1060px;margin:auto;padding:14px}
+h1{margin:0;font-size:18px;letter-spacing:.2px}
+.small{font-size:12px;opacity:.82;line-height:1.35}
+.card{background:var(--card); border:1px solid var(--border); border-radius:14px; padding:14px; margin-bottom:12px; box-shadow:var(--shadow);}
+.card.compact{padding:12px}
+.row{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.grid{display:grid;gap:10px}
+@media(min-width:840px){.grid{grid-template-columns:1fr 1fr}}
+.grid3{display:grid;gap:10px}
+@media(min-width:980px){.grid3{grid-template-columns:1fr 1fr 1fr}}
+label{display:flex;gap:8px;align-items:center;font-size:13px;color:var(--muted);margin:0 0 6px}
+select,textarea,button{
+  width:100%; padding:12px 12px; border-radius:12px;
+  border:1px solid var(--border2); background:var(--card2); color:var(--text); font-size:16px;
+}
+textarea{min-height:86px;resize:vertical}
+button{background:#171b28;font-weight:900;cursor:pointer}
+button.secondary{background:#0f1320}
+button.ghost{background:transparent;border:1px solid var(--border2)}
+button:active{transform:translateY(1px)}
+.div{height:1px;background:var(--border);margin:12px 0}
+.badge{display:inline-flex;align-items:center;gap:8px;padding:8px 10px;border-radius:999px;border:1px solid var(--border2);background:var(--card2);font-size:12px;color:var(--muted)}
+.status{padding:12px;border-radius:12px;font-weight:900;line-height:1.2}
+.ok{background:var(--ok);border:1px solid rgba(46,204,113,.35)}
+.mid{background:var(--mid);border:1px solid rgba(241,196,15,.35)}
+.high{background:var(--high);border:1px solid rgba(230,126,34,.35)}
+.crit{background:var(--crit);border:1px solid rgba(231,76,60,.35)}
+.kpi{font-size:12px;color:var(--muted2);line-height:1.35}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+details{border:1px solid var(--border);border-radius:12px;background:rgba(255,255,255,.02)}
+details>summary{cursor:pointer;padding:12px;font-weight:900;list-style:none}
+details>summary::-webkit-details-marker{display:none}
+details .content{padding:0 12px 12px;color:var(--muted);line-height:1.45;font-size:13px}
+.tip{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:999px;border:1px solid var(--border2);background:var(--card2);font-size:12px;color:var(--muted);cursor:help; user-select:none;}
+.btnrow{display:grid;gap:10px;grid-template-columns:1fr}
+@media(min-width:840px){.btnrow{grid-template-columns:1fr 1fr}}
+.tabs{display:flex;gap:8px;flex-wrap:wrap}
+.tab{width:auto;padding:10px 12px;border-radius:999px;border:1px solid var(--border2);background:var(--card2);color:var(--muted);font-weight:900}
+.tab.active{background:#171b28;color:var(--text)}
+.pillbtn{width:auto;padding:10px 12px;border-radius:999px;font-size:13px;border:1px solid var(--border2);background:var(--card2);color:var(--muted);font-weight:900}
+.pillbtn.active{background:#171b28;color:var(--text)}
+.flex{display:flex;gap:10px;flex-wrap:wrap}
+.half{flex:1;min-width:280px}
+.footer{
+  font-size:14px;color:var(--muted);line-height:1.55;
+  padding:16px;border-radius:12px;border:1px solid var(--border2);
+  background:rgba(255,255,255,.02);
+}
+.footer b{color:var(--text);font-size:15px}
+hr{border:none;border-top:1px solid var(--border);margin:12px 0}
+@media print{
+  header, .noprint{display:none !important}
+  body{background:white;color:black}
+  .card{box-shadow:none;border:1px solid #ddd}
+  select,textarea,button{border:1px solid #ddd}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="row">
+    <div>
+      <h1 data-i18n="title">KUORMA+ 3.9</h1>
+      <div class="small" data-i18n="subtitle">Julkinen analyysityökalu sotilaan kuormituspaineen arviointiin. Ei kilogrammalaskuri, vaan päätöstuen runko.</div>
+    </div>
+    <div class="tabs noprint">
+      <button class="tab active" id="modeSingle" type="button" data-i18n="mode_single">Yksi arvio</button>
+      <button class="tab" id="modeCompare" type="button" data-i18n="mode_compare">Ennen–jälkeen</button>
+      <button class="pillbtn active" id="fiBtn" type="button">FI</button>
+      <button class="pillbtn" id="enBtn" type="button">EN</button>
+      <div class="badge"><span class="mono">v3.9</span></div>
+    </div>
+  </div>
+</header>
+
+<main>
+
+  <div class="card compact noprint">
+    <details open>
+      <summary data-i18n="how_title">Mitä tämä tekee</summary>
+      <div class="content" data-i18n="how_body">
+        Täytä tehtäväkonteksti ja arvioi tekijät. KUORMA+ tuottaa kuormitusindeksin ja toimenpidesuosituksen.
+        Ennen–jälkeen-tilassa voit testata yhtä muutosta kerrallaan ja katsoa, paraneeko tilanne.
+      </div>
+    </details>
+  </div>
+
+  <div class="card">
+    <div class="row">
+      <b data-i18n="ctx_title">Tehtäväkonteksti</b>
+      <div class="kpi" id="derivedCtx">–</div>
+    </div>
+    <div class="div"></div>
+
+    <div class="grid">
+      <div>
+        <label><span data-i18n="ctx_branch">Aselaji / joukkotyyppi</span><span class="tip" id="tip_branch">i</span></label>
+        <select id="aselaji">
+          <option value="" data-i18n="opt_choose">Valitse…</option>
+          <option data-i18n="br_infantry">Jalkaväki</option>
+          <option data-i18n="br_jaeger">Jääkäriyksikkö</option>
+          <option data-i18n="br_recon">Tiedustelujoukko</option>
+          <option data-i18n="br_engineer">Pioneerijoukko</option>
+          <option data-i18n="br_artillery">Tykistöjoukko</option>
+          <option data-i18n="br_mortar">Kranaatinheitinjoukko</option>
+          <option data-i18n="br_airdef">Ilmatorjuntajoukko</option>
+          <option data-i18n="br_at">Panssarintorjuntajoukko</option>
+          <option data-i18n="br_cis">Johtamisjärjestelmäjoukko</option>
+          <option data-i18n="br_fso">Tulenjohtoryhmä</option>
+          <option data-i18n="br_log">Huoltojoukko</option>
+          <option data-i18n="br_med">Lääkintäjoukko</option>
+          <option data-i18n="br_other">Muu</option>
+        </select>
+      </div>
+
+      <div>
+        <label><span data-i18n="ctx_task">Tehtävätyyppi</span><span class="tip" id="tip_task">i</span></label>
+        <select id="tehtava">
+          <option value="" data-i18n="opt_choose">Valitse…</option>
+          <option data-i18n="task_def">Puolustus</option>
+          <option data-i18n="task_delay">Viivytys</option>
+          <option data-i18n="task_attack">Hyökkäys</option>
+          <option data-i18n="task_breach">Raivaus</option>
+          <option data-i18n="task_recon">Tiedustelu</option>
+          <option data-i18n="task_security">Suojaus / vartiointi</option>
+          <option data-i18n="task_islands">Saarten miehitys / saaristotaistelu</option>
+          <option data-i18n="task_other">Muu</option>
+        </select>
+      </div>
+
+      <div>
+        <label><span data-i18n="ctx_terrain">Maastotyyppi</span><span class="tip" id="tip_terrain">i</span></label>
+        <select id="maasto">
+          <option value="" data-i18n="opt_choose">Valitse…</option>
+          <option data-i18n="ter_open">Avoin maasto</option>
+          <option data-i18n="ter_forest">Metsämaasto</option>
+          <option data-i18n="ter_urban">Rakennettu alue</option>
+          <option data-i18n="ter_archipelago">Saaristo / rannikkoalue</option>
+          <option data-i18n="ter_hard">Vaikeakulkuinen (suo, kivikko)</option>
+          <option data-i18n="ter_mixed">Sekamaasto</option>
+        </select>
+      </div>
+
+      <div>
+        <label><span data-i18n="ctx_season">Vuodenaika</span><span class="tip" id="tip_season">i</span></label>
+        <select id="vuodenaika">
+          <option value="" data-i18n="opt_choose">Valitse…</option>
+          <option data-i18n="sea_summer">Kesä</option>
+          <option data-i18n="sea_spring">Kevät (loska)</option>
+          <option data-i18n="sea_autumn">Syksy (märkä)</option>
+          <option data-i18n="sea_winter">Talvi</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="row">
+      <b data-i18n="inputs_title">Arvioitavat tekijät</b>
+      <div class="kpi" data-i18n="inputs_kpi">Täytä valinnat. Indeksi päivittyy automaattisesti.</div>
+    </div>
+    <div class="div"></div>
+
+    <div id="singleWrap">
+      <div class="grid3">
+        <div>
+          <label><span data-i18n="L_lbl">Liikevaatimus (L)</span><span class="tip" id="tip_L">i</span></label>
+          <select id="L">
+            <option value="" data-i18n="opt_choose">Valitse…</option>
+            <option value="1" data-i18n="L_1">Paikallaan / lyhyet siirtymät</option>
+            <option value="3" data-i18n="L_3">Sekamuotoinen liike</option>
+            <option value="5" data-i18n="L_5">Pitkä siirtymä / korkea tempo</option>
+          </select>
+        </div>
+        <div>
+          <label><span data-i18n="H_lbl">Huoltovarmuus (H)</span><span class="tip" id="tip_H">i</span></label>
+          <select id="H">
+            <option value="" data-i18n="opt_choose">Valitse…</option>
+            <option value="1" data-i18n="H_1">Täydennys varma &lt;24h</option>
+            <option value="3" data-i18n="H_3">Epävarma 24–72h</option>
+            <option value="5" data-i18n="H_5">Ei varmaa huoltoa &gt;72h</option>
+          </select>
+        </div>
+        <div>
+          <label><span data-i18n="K_lbl">Kontaktiriski (K)</span><span class="tip" id="tip_K">i</span></label>
+          <select id="K">
+            <option value="" data-i18n="opt_choose">Valitse…</option>
+            <option value="1" data-i18n="K_1">Matala</option>
+            <option value="3" data-i18n="K_3">Keskitaso</option>
+            <option value="5" data-i18n="K_5">Korkea</option>
+          </select>
+        </div>
+
+        <div>
+          <label><span data-i18n="spread_lbl">Kuorman hajonta (D)</span><span class="tip" id="tip_spread">i</span></label>
+          <select id="spread">
+            <option value="" data-i18n="opt_choose">Valitse…</option>
+            <option value="0" data-i18n="spread_0">Hallittu (&lt;5 kg)</option>
+            <option value="1" data-i18n="spread_1">Merkittävä (5–10 kg)</option>
+            <option value="2" data-i18n="spread_2">Suuri (&gt;10 kg)</option>
+          </select>
+        </div>
+        <div>
+          <label><span data-i18n="weak_lbl">Heikoin lenkki (W)</span><span class="tip" id="tip_weak">i</span></label>
+          <select id="weak">
+            <option value="0" data-i18n="weak_0">Ei tunnistettua</option>
+            <option value="1" data-i18n="weak_1">Yksi rajoite</option>
+            <option value="2" data-i18n="weak_2">Useita rajoitteita</option>
+          </select>
+        </div>
+        <div>
+          <label><span data-i18n="shared_lbl">Kalustonjako tehty? (−1)</span><span class="tip" id="tip_shared">i</span></label>
+          <select id="shared">
+            <option value="0" data-i18n="shared_0">Ei tarkistettu</option>
+            <option value="1" data-i18n="shared_1">Kyllä</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="div"></div>
+      <label><span data-i18n="notes_lbl">Muistiinpanot</span><span class="tip" id="tip_notes">i</span></label>
+      <textarea id="notes"></textarea>
+    </div>
+
+    <div id="compareWrap" style="display:none">
+      <div class="flex">
+        <div class="half">
+          <b data-i18n="before">Ennen</b>
+          <div class="div"></div>
+          <div class="grid3" id="beforeSelects"></div>
+          <div class="div"></div>
+          <label data-i18n="notes_lbl">Muistiinpanot</label>
+          <textarea id="N_b"></textarea>
+        </div>
+
+        <div class="half">
+          <b data-i18n="after">Jälkeen</b>
+          <div class="div"></div>
+          <div class="grid3" id="afterSelects"></div>
+          <div class="div"></div>
+          <label data-i18n="notes_lbl">Muistiinpanot</label>
+          <textarea id="N_a"></textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="row">
+      <b data-i18n="result_title">Tulos</b>
+      <div class="badge mono" id="formula">–</div>
+    </div>
+    <div class="div"></div>
+
+    <div id="singleResult">
+      <div id="out" class="status ok" data-i18n="fill_req">Täytä pakolliset kentät.</div>
+      <div class="div"></div>
+      <div class="kpi" id="details">–</div>
+      <div class="div"></div>
+      <div class="kpi" id="advice">–</div>
+    </div>
+
+    <div id="compareResult" style="display:none">
+      <div class="row">
+        <div>
+          <b data-i18n="delta_title">Muutos</b>
+          <div class="mono" id="deltaLine">–</div>
+        </div>
+        <div class="kpi" id="deltaHint">–</div>
+      </div>
+      <hr>
+      <div class="flex">
+        <div class="half">
+          <div id="outB" class="status ok">–</div>
+          <div class="div"></div>
+          <div class="kpi" id="detailsB">–</div>
+          <div class="div"></div>
+          <div class="kpi" id="adviceB">–</div>
+        </div>
+        <div class="half">
+          <div id="outA" class="status ok">–</div>
+          <div class="div"></div>
+          <div class="kpi" id="detailsA">–</div>
+          <div class="div"></div>
+          <div class="kpi" id="adviceA">–</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="card noprint">
+    <div class="row">
+      <b data-i18n="tools_title">Työkalut</b>
+      <div class="kpi" data-i18n="tools_kpi">Kopioi raportti tai tulosta PDF.</div>
+    </div>
+    <div class="div"></div>
+    <div class="btnrow">
+      <button type="button" id="copy" data-i18n="btn_copy">Kopioi raportti</button>
+      <button type="button" id="print" class="ghost" data-i18n="btn_pdf">Tulosta / PDF</button>
+    </div>
+    <div class="div"></div>
+    <div class="btnrow">
+      <button type="button" id="reset" class="ghost" data-i18n="btn_reset">Nollaa</button>
+      <button type="button" id="toggleTips" class="secondary" data-i18n="btn_tips">Selitteet päälle/pois</button>
+    </div>
+  </div>
+
+  <div class="card compact">
+    <div class="footer">
+      <b>KUORMA+ © 2026 Tatu Leppänen (finnncofiles)</b><br><br>
+      <div id="licenseText"></div>
+    </div>
+  </div>
+
+</main>
+
+<script>
+const I18N = {
+  fi: {
+    title:"KUORMA+ 3.9",
+    subtitle:"Julkinen analyysityökalu sotilaan kuormituspaineen arviointiin. Ei kilogrammalaskuri, vaan päätöstuen runko.",
+    mode_single:"Yksi arvio",
+    mode_compare:"Ennen–jälkeen",
+    how_title:"Mitä tämä tekee",
+    how_body:"Täytä tehtäväkonteksti ja arvioi tekijät. KUORMA+ tuottaa kuormitusindeksin ja toimenpidesuosituksen. Ennen–jälkeen-tilassa voit testata yhtä muutosta kerrallaan ja katsoa, paraneeko tilanne.",
+    ctx_title:"Tehtäväkonteksti",
+    ctx_branch:"Aselaji / joukkotyyppi",
+    ctx_task:"Tehtävätyyppi",
+    ctx_terrain:"Maastotyyppi",
+    ctx_season:"Vuodenaika",
+    inputs_title:"Arvioitavat tekijät",
+    inputs_kpi:"Täytä valinnat. Indeksi päivittyy automaattisesti.",
+    result_title:"Tulos",
+    tools_title:"Työkalut",
+    tools_kpi:"Kopioi raportti tai tulosta PDF.",
+    btn_copy:"Kopioi raportti",
+    btn_pdf:"Tulosta / PDF",
+    btn_reset:"Nollaa",
+    btn_tips:"Selitteet päälle/pois",
+    fill_req:"Täytä pakolliset kentät.",
+    delta_title:"Muutos",
+    before:"Ennen",
+    after:"Jälkeen",
+    opt_choose:"Valitse…",
+    br_infantry:"Jalkaväki", br_jaeger:"Jääkäriyksikkö", br_recon:"Tiedustelujoukko", br_engineer:"Pioneerijoukko",
+    br_artillery:"Tykistöjoukko", br_mortar:"Kranaatinheitinjoukko", br_airdef:"Ilmatorjuntajoukko", br_at:"Panssarintorjuntajoukko",
+    br_cis:"Johtamisjärjestelmäjoukko", br_fso:"Tulenjohtoryhmä", br_log:"Huoltojoukko", br_med:"Lääkintäjoukko", br_other:"Muu",
+    task_def:"Puolustus", task_delay:"Viivytys", task_attack:"Hyökkäys", task_breach:"Raivaus", task_recon:"Tiedustelu",
+    task_security:"Suojaus / vartiointi", task_islands:"Saarten miehitys / saaristotaistelu", task_other:"Muu",
+    ter_open:"Avoin maasto", ter_forest:"Metsämaasto", ter_urban:"Rakennettu alue", ter_archipelago:"Saaristo / rannikkoalue",
+    ter_hard:"Vaikeakulkuinen (suo, kivikko)", ter_mixed:"Sekamaasto",
+    sea_summer:"Kesä", sea_spring:"Kevät (loska)", sea_autumn:"Syksy (märkä)", sea_winter:"Talvi",
+    L_lbl:"Liikevaatimus (L)", H_lbl:"Huoltovarmuus (H)", K_lbl:"Kontaktiriski (K)",
+    spread_lbl:"Kuorman hajonta (D)", weak_lbl:"Heikoin lenkki (W)", shared_lbl:"Kalustonjako tehty? (−1)",
+    notes_lbl:"Muistiinpanot",
+    L_1:"Paikallaan / lyhyet siirtymät", L_3:"Sekamuotoinen liike", L_5:"Pitkä siirtymä / korkea tempo",
+    H_1:"Täydennys varma <24h", H_3:"Epävarma 24–72h", H_5:"Ei varmaa huoltoa >72h",
+    K_1:"Matala", K_3:"Keskitaso", K_5:"Korkea",
+    spread_0:"Hallittu (<5 kg)", spread_1:"Merkittävä (5–10 kg)", spread_2:"Suuri (>10 kg)",
+    weak_0:"Ei tunnistettua", weak_1:"Yksi rajoite", weak_2:"Useita rajoitteita",
+    shared_0:"Ei tarkistettu", shared_1:"Kyllä"
+  },
+  en: {
+    title:"KUORMA+ 3.9",
+    subtitle:"Public analysis tool for assessing soldier load pressure. Not a kilogram calculator, but a decision-support framework.",
+    mode_single:"Single",
+    mode_compare:"Before–after",
+    how_title:"What this does",
+    how_body:"Fill mission context and rate the factors. KUORMA+ produces a load index and a recommended action. In before–after mode, test one change at a time and see whether the situation improves.",
+    ctx_title:"Mission context",
+    ctx_branch:"Branch / unit type",
+    ctx_task:"Mission type",
+    ctx_terrain:"Terrain",
+    ctx_season:"Season",
+    inputs_title:"Factors to rate",
+    inputs_kpi:"Fill the selections. The index updates automatically.",
+    result_title:"Result",
+    tools_title:"Tools",
+    tools_kpi:"Copy report or print to PDF.",
+    btn_copy:"Copy report",
+    btn_pdf:"Print / PDF",
+    btn_reset:"Reset",
+    btn_tips:"Toggle help text",
+    fill_req:"Fill required fields.",
+    delta_title:"Change",
+    before:"Before",
+    after:"After",
+    opt_choose:"Choose…",
+    br_infantry:"Infantry", br_jaeger:"Jaeger unit", br_recon:"Recon", br_engineer:"Engineers",
+    br_artillery:"Artillery", br_mortar:"Mortars", br_airdef:"Air defence", br_at:"Anti-tank",
+    br_cis:"C2 / signals", br_fso:"Fire support", br_log:"Logistics", br_med:"Medical", br_other:"Other",
+    task_def:"Defence", task_delay:"Delay", task_attack:"Attack", task_breach:"Breach / clearance", task_recon:"Reconnaissance",
+    task_security:"Security / guard", task_islands:"Island occupation / archipelago ops", task_other:"Other",
+    ter_open:"Open terrain", ter_forest:"Forest", ter_urban:"Built-up area", ter_archipelago:"Archipelago / coastal",
+    ter_hard:"Difficult terrain (swamp, rocks)", ter_mixed:"Mixed terrain",
+    sea_summer:"Summer", sea_spring:"Spring (slush)", sea_autumn:"Autumn (wet)", sea_winter:"Winter",
+    L_lbl:"Movement demand (L)", H_lbl:"Resupply certainty (H)", K_lbl:"Contact risk (K)",
+    spread_lbl:"Load dispersion (D)", weak_lbl:"Weakest link (W)", shared_lbl:"Redistribution done? (−1)",
+    notes_lbl:"Notes",
+    L_1:"Static / short moves", L_3:"Mixed movement", L_5:"Long move / high tempo",
+    H_1:"Resupply reliable <24h", H_3:"Uncertain 24–72h", H_5:"No reliable resupply >72h",
+    K_1:"Low", K_3:"Medium", K_5:"High",
+    spread_0:"Controlled (<5 kg)", spread_1:"Significant (5–10 kg)", spread_2:"Large (>10 kg)",
+    weak_0:"None identified", weak_1:"One constraint", weak_2:"Multiple constraints",
+    shared_0:"Not checked", shared_1:"Yes"
+  }
+};
+let lang="fi";
+let tipsOn=true;
+let mode="single";
+
+function t(key){return (I18N[lang] && I18N[lang][key]) ? I18N[lang][key] : (I18N.fi[key] || key);}
+
+function applyLang(){
+  document.documentElement.lang = (lang==="fi"?"fi":"en");
+  document.querySelectorAll("[data-i18n]").forEach(el=>{
+    const key=el.getAttribute("data-i18n");
+    el.textContent = t(key);
+  });
+
+  // tooltips
+  const tips={
+    tip_branch:{fi:"Konteksti raporttiin. Ei muuta pistettä.",en:"Report context. Does not change score."},
+    tip_task:{fi:"Tehtäväprofiili vaikuttaa omavaraisuuteen ja tempoon.",en:"Mission profile affects self-sufficiency and tempo."},
+    tip_terrain:{fi:"Maasto pisteytetään fyysisen ja taktisen kitkan mukaan.",en:"Terrain is scored by physical and tactical friction."},
+    tip_season:{fi:"Olosuhteet vaikuttavat rasitukseen ja energiantarpeeseen.",en:"Conditions affect fatigue and energy demand."},
+    tip_L:{fi:"Tempo ja siirtymävaatimus. Ylilastaus näkyy liikkeessä.",en:"Tempo/displacement requirement. Overload hits movement."},
+    tip_H:{fi:"Huollon epävarmuus siirtää omavaraisuutta sotilaalle.",en:"Resupply uncertainty pushes self-sufficiency to the soldier."},
+    tip_K:{fi:"Kontaktiriski lisää suoja- ja ampumatarvepainetta.",en:"Contact risk increases protection/ammo pressure."},
+    tip_spread:{fi:"Hajonta on tempon riski. Tasaa kuormaa ennen lähtöä.",en:"Dispersion threatens tempo. Balance loads before departure."},
+    tip_weak:{fi:"Heikoin lenkki rajoittaa tempoa.",en:"Weakest link limits tempo."},
+    tip_shared:{fi:"Kalustonjako vähentää kuormituspaineen riskiä.",en:"Redistribution reduces load-pressure risk."},
+    tip_notes:{fi:"Kirjaa yksi päätös tai huomio. Pidä yleisellä tasolla.",en:"Write one decision or note. Keep it general."}
+  };
+  for(const [id,msg] of Object.entries(tips)){
+    const el=document.getElementById(id);
+    if(el) el.title = (lang==="fi"?msg.fi:msg.en);
+  }
+
+  const ph = (lang==="fi"
+    ?"Esim: karsittu ei-kriittinen, kalusto jaettu uudelleen, sovittu vesitäydennys pienissä erissä."
+    :"E.g.: cut non-critical, redistributed shared kit, planned small-batch water resupply.");
+  ["notes","N_b","N_a"].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) el.placeholder = ph;
+  });
+
+  document.getElementById("licenseText").innerHTML = (lang==="fi"
+    ?"Tämä työkalu on tarkoitettu koulutus- ja analyysikäyttöön.<br>Saat käyttää, jakaa ja soveltaa KUORMA+:aa ei-kaupallisesti, kun tekijä mainitaan.<br><br><b>Kielletty:</b> työkalun tai sen sisällön myynti, edelleenlisensointi tai esittäminen omana tuotteena.<br><br>KUORMA+ ei ole Puolustusvoimien virallinen järjestelmä eikä korvaa johtajan harkintaa."
+    :"This tool is intended for training and analysis use.<br>You may use, share and adapt KUORMA+ for non-commercial purposes with attribution.<br><br><b>Not allowed:</b> selling, re-licensing, or presenting this tool/content as your own product.<br><br>KUORMA+ is not an official Finnish Defence Forces system and does not replace commander judgement.");
+
+  document.getElementById("fiBtn").classList.toggle("active",lang==="fi");
+  document.getElementById("enBtn").classList.toggle("active",lang==="en");
+
+  setTipsVisibility(tipsOn);
+  updateAll();
+}
+
+function setTipsVisibility(on){
+  tipsOn=on;
+  document.querySelectorAll(".tip").forEach(el=>{ el.style.display = on ? "inline-flex" : "none"; });
+}
+
+function ctxReady(){
+  return document.getElementById("aselaji").value &&
+         document.getElementById("tehtava").value &&
+         document.getElementById("maasto").value &&
+         document.getElementById("vuodenaika").value;
+}
+
+function deriveM(){
+  const m=document.getElementById("maasto").value;
+  const map = {
+    [t("ter_open")]:1,
+    [t("ter_forest")]:3,
+    [t("ter_urban")]:4,
+    [t("ter_archipelago")]:4,
+    [t("ter_hard")]:5,
+    [t("ter_mixed")]:3,
+  };
+  return map[m] ?? 3;
+}
+function deriveS(){
+  const s=document.getElementById("vuodenaika").value;
+  const map = {
+    [t("sea_summer")]:1,
+    [t("sea_spring")]:3,
+    [t("sea_autumn")]:3,
+    [t("sea_winter")]:5,
+  };
+  return map[s] ?? 0;
+}
+function deriveT(){
+  const tt=document.getElementById("tehtava").value;
+  const map = {
+    [t("task_def")]:0,
+    [t("task_delay")]:1,
+    [t("task_security")]:1,
+    [t("task_attack")]:2,
+    [t("task_breach")]:2,
+    [t("task_recon")]:3,
+    [t("task_islands")]:3,
+  };
+  return map[tt] ?? 2;
+}
+
+function classify(total){
+  if(total<=12) return {cls:"ok", fi:"Normaali kuormitus", en:"Normal load"};
+  if(total<=18) return {cls:"mid", fi:"Kohonnut kuormitus", en:"Elevated load"};
+  if(total<=24) return {cls:"high", fi:"Kriittinen kuormitus", en:"Critical load"};
+  return {cls:"crit", fi:"Äärikuormitus", en:"Extreme load"};
+}
+
+function advice(total, D, W, sharedYes){
+  const fi=[], en=[];
+  if(total>18){
+    fi.push("Tee yksi selkeä kevennyspäätös ennen siirtymää. Karsi ei-kriittinen ja tarkista kalustonjako.");
+    en.push("Make one clear lightening decision before movement. Cut non-critical items and check redistribution.");
+  }
+  if(D>=1){
+    fi.push("Kuorman hajonta uhkaa tempoa. Tasaa kuormaa tai vaihda työjakoa.");
+    en.push("Load dispersion threatens tempo. Balance loads or adjust task allocation.");
+  }
+  if(W>=1){
+    fi.push("Heikoin lenkki määrittää tempon. Vähennä kuormaa tai tue roolijaoilla.");
+    en.push("Weakest link sets the pace. Reduce load or support via role allocation.");
+  }
+  if(sharedYes===0){
+    fi.push("Tee taisteluvalmiustarkastus ja yhteisen kaluston uudelleenjako ennen lähtöä.");
+    en.push("Conduct a readiness check and redistribute shared kit before departure.");
+  }
+  if(fi.length===0){
+    fi.push("Pidä nykyinen kuormaprofiili, mutta seuraa väsymystä ja ylläpidä huoltorutiinit.");
+    en.push("Maintain current profile, monitor fatigue, and keep resupply routines.");
+  }
+  return {fi:fi.join(" "), en:en.join(" ")};
+}
+
+function updateDerivedCtx(){
+  const asel=document.getElementById("aselaji").value || "–";
+  const teht=document.getElementById("tehtava").value || "–";
+  const maa=document.getElementById("maasto").value || "–";
+  const vuod=document.getElementById("vuodenaika").value || "–";
+  document.getElementById("derivedCtx").textContent = `${asel} | ${teht} | ${maa} | ${vuod}`;
+}
+
+function computeSingle(){
+  const L = parseInt(document.getElementById("L").value||0,10);
+  const H = parseInt(document.getElementById("H").value||0,10);
+  const K = parseInt(document.getElementById("K").value||0,10);
+  const D = parseInt(document.getElementById("spread").value||0,10);
+  const W = parseInt(document.getElementById("weak").value||0,10);
+  const sharedYes = parseInt(document.getElementById("shared").value||0,10); // 1 => yes
+  const S = sharedYes===1 ? -1 : 0;
+  const M = deriveM();
+  const Szn = deriveS();
+  const Tt = deriveT();
+  const total = L + H + K + M + Szn + Tt + D + W + S;
+  return {L,H,K,M,Szn,Tt,D,W,S,total,sharedYes};
+}
+
+function renderSingle(){
+  updateDerivedCtx();
+  const out = document.getElementById("out");
+  const details = document.getElementById("details");
+  const adviceEl = document.getElementById("advice");
+  const formula = document.getElementById("formula");
+
+  if(!ctxReady()){
+    out.className="status ok";
+    out.textContent = t("fill_req");
+    details.textContent = "–";
+    adviceEl.textContent = "–";
+    formula.textContent = "–";
+    return;
+  }
+  const c = computeSingle();
+  formula.textContent = `L${c.L}+H${c.H}+K${c.K}+M${c.M}+S${c.Szn}+T${c.Tt}+D${c.D}+W${c.W}${c.S===-1?"-1":""} = ${c.total}`;
+  const cls = classify(c.total);
+  out.className = "status " + cls.cls;
+  out.textContent = (lang==="fi"?cls.fi:cls.en) + ` (${c.total})`;
+
+  const detFi = `Maasto (M)=${c.M}, vuodenaika (S)=${c.Szn}, tehtäväprofiili (T)=${c.Tt}.`;
+  const detEn = `Terrain (M)=${c.M}, season (S)=${c.Szn}, mission profile (T)=${c.Tt}.`;
+  details.textContent = (lang==="fi"?detFi:detEn);
+
+  const adv = advice(c.total, c.D, c.W, c.sharedYes);
+  adviceEl.textContent = (lang==="fi"?adv.fi:adv.en);
+}
+
+function buildCompareSelects(){
+  // Build selects by cloning option sets from single selects
+  const ids = [
+    {k:"L", src:"L", b:"L_b", a:"L_a"},
+    {k:"H", src:"H", b:"H_b", a:"H_a"},
+    {k:"K", src:"K", b:"K_b", a:"K_a"},
+    {k:"D", src:"spread", b:"D_b", a:"D_a"},
+    {k:"W", src:"weak", b:"W_b", a:"W_a"},
+    {k:"S", src:"shared", b:"S_b", a:"S_a"},
+  ];
+  const beforeWrap = document.getElementById("beforeSelects");
+  const afterWrap = document.getElementById("afterSelects");
+  beforeWrap.innerHTML = "";
+  afterWrap.innerHTML = "";
+  for(const it of ids){
+    const srcSel = document.getElementById(it.src);
+    const bSel = srcSel.cloneNode(true);
+    bSel.id = it.b;
+    const aSel = srcSel.cloneNode(true);
+    aSel.id = it.a;
+
+    const bDiv = document.createElement("div");
+    const aDiv = document.createElement("div");
+    const bLab = document.createElement("label");
+    const aLab = document.createElement("label");
+    bLab.setAttribute("data-i18n", it.k+"_lbl");
+    aLab.setAttribute("data-i18n", it.k+"_lbl");
+    bLab.textContent = t(it.k+"_lbl");
+    aLab.textContent = t(it.k+"_lbl");
+    bDiv.appendChild(bLab); bDiv.appendChild(bSel);
+    aDiv.appendChild(aLab); aDiv.appendChild(aSel);
+    beforeWrap.appendChild(bDiv);
+    afterWrap.appendChild(aDiv);
+
+    bSel.addEventListener("change", updateAll);
+    aSel.addEventListener("change", updateAll);
+  }
+}
+
+function computeFrom(prefix){
+  const get = (id)=>parseInt(document.getElementById(id).value||0,10);
+  const L=get(prefix==="b"?"L_b":"L_a");
+  const H=get(prefix==="b"?"H_b":"H_a");
+  const K=get(prefix==="b"?"K_b":"K_a");
+  const D=get(prefix==="b"?"D_b":"D_a");
+  const W=get(prefix==="b"?"W_b":"W_a");
+  const sharedYes=get(prefix==="b"?"S_b":"S_a");
+  const S = sharedYes===1 ? -1 : 0;
+  const M=deriveM(), Szn=deriveS(), Tt=deriveT();
+  const total = L+H+K+M+Szn+Tt+D+W+S;
+  return {L,H,K,D,W,sharedYes,S,M,Szn,Tt,total};
+}
+
+function renderCompare(){
+  updateDerivedCtx();
+  const outB=document.getElementById("outB"), outA=document.getElementById("outA");
+  const detailsB=document.getElementById("detailsB"), detailsA=document.getElementById("detailsA");
+  const adviceB=document.getElementById("adviceB"), adviceA=document.getElementById("adviceA");
+  const deltaLine=document.getElementById("deltaLine"), deltaHint=document.getElementById("deltaHint");
+  const formula=document.getElementById("formula");
+
+  if(!ctxReady()){
+    formula.textContent="–";
+    deltaLine.textContent="–";
+    deltaHint.textContent = "–";
+    outB.className="status ok"; outA.className="status ok";
+    outB.textContent=t("fill_req"); outA.textContent=t("fill_req");
+    detailsB.textContent="–"; detailsA.textContent="–";
+    adviceB.textContent="–"; adviceA.textContent="–";
+    return;
+  }
+
+  const b=computeFrom("b");
+  const a=computeFrom("a");
+  const delta = a.total - b.total;
+  formula.textContent = `Δ = ${delta} (B ${b.total} → A ${a.total})`;
+
+  const cb=classify(b.total), ca=classify(a.total);
+  outB.className="status "+cb.cls; outA.className="status "+ca.cls;
+  outB.textContent=(lang==="fi"?cb.fi:cb.en)+` (${b.total})`;
+  outA.textContent=(lang==="fi"?ca.fi:ca.en)+` (${a.total})`;
+
+  const detFi = `Maasto (M)=${b.M}, vuodenaika (S)=${b.Szn}, tehtäväprofiili (T)=${b.Tt}.`;
+  const detEn = `Terrain (M)=${b.M}, season (S)=${b.Szn}, mission profile (T)=${b.Tt}.`;
+  detailsB.textContent = (lang==="fi"?detFi:detEn);
+  detailsA.textContent = (lang==="fi"?detFi:detEn);
+
+  adviceB.textContent = (lang==="fi"?advice(b.total,b.D,b.W,b.sharedYes).fi:advice(b.total,b.D,b.W,b.sharedYes).en);
+  adviceA.textContent = (lang==="fi"?advice(a.total,a.D,a.W,a.sharedYes).fi:advice(a.total,a.D,a.W,a.sharedYes).en);
+
+  if(lang==="fi"){
+    deltaLine.textContent = `Muutos: ${delta} (ennen ${b.total}, jälkeen ${a.total})`;
+    deltaHint.textContent = (delta<0) ? "Parannus: kuormitusindeksi pieneni." : (delta>0 ? "Heikennys: kuormitusindeksi kasvoi." : "Ei muutosta.");
+  } else {
+    deltaLine.textContent = `Change: ${delta} (before ${b.total}, after ${a.total})`;
+    deltaHint.textContent = (delta<0) ? "Improvement: load index decreased." : (delta>0 ? "Worse: load index increased." : "No change.");
+  }
+}
+
+function updateAll(){
+  if(mode==="single"){
+    renderSingle();
+  } else {
+    renderCompare();
+  }
+}
+
+function setMode(m){
+  mode=m;
+  document.getElementById("modeSingle").classList.toggle("active", m==="single");
+  document.getElementById("modeCompare").classList.toggle("active", m==="compare");
+  document.getElementById("singleWrap").style.display = (m==="single"?"block":"none");
+  document.getElementById("singleResult").style.display = (m==="single"?"block":"none");
+  document.getElementById("compareWrap").style.display = (m==="compare"?"block":"none");
+  document.getElementById("compareResult").style.display = (m==="compare"?"block":"none");
+  updateAll();
+}
+
+function resetAll(){
+  ["aselaji","tehtava","maasto","vuodenaika","L","H","K","spread","weak","shared"].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) el.value = (id in {"spread":1,"weak":1,"shared":1}) ? (id==="spread"?"":(id==="weak"?"0":"0")) : "";
+  });
+  document.getElementById("notes").value="";
+  const nb=document.getElementById("N_b"); if(nb) nb.value="";
+  const na=document.getElementById("N_a"); if(na) na.value="";
+  // reset compare selects if present
+  ["L_b","H_b","K_b","D_b","W_b","S_b","L_a","H_a","K_a","D_a","W_a","S_a"].forEach(id=>{
+    const el=document.getElementById(id); if(el) el.value="";
+  });
+  updateAll();
+}
+
+function copyReport(){
+  let text="";
+  const ctx = `${document.getElementById("aselaji").value} | ${document.getElementById("tehtava").value} | ${document.getElementById("maasto").value} | ${document.getElementById("vuodenaika").value}`;
+  if(mode==="single"){
+    const c=computeSingle();
+    const cls=classify(c.total);
+    text += `KUORMA+ 3.9\n`;
+    text += `${lang==="fi"?"Konteksti":"Context"}: ${ctx}\n`;
+    text += `${lang==="fi"?"Tulos":"Result"}: ${lang==="fi"?cls.fi:cls.en} (${c.total})\n`;
+    text += `Kaava: L${c.L}+H${c.H}+K${c.K}+M${c.M}+S${c.Szn}+T${c.Tt}+D${c.D}+W${c.W}${c.S===-1?"-1":""} = ${c.total}\n`;
+    const adv=advice(c.total,c.D,c.W,c.sharedYes);
+    text += `${lang==="fi"?"Suositus":"Recommendation"}: ${lang==="fi"?adv.fi:adv.en}\n`;
+    const notes=document.getElementById("notes").value.trim();
+    if(notes) text += `${lang==="fi"?"Muistiinpanot":"Notes"}: ${notes}\n`;
+  } else {
+    const b=computeFrom("b"), a=computeFrom("a");
+    const cb=classify(b.total), ca=classify(a.total);
+    const delta=a.total-b.total;
+    text += `KUORMA+ 3.9\n`;
+    text += `${lang==="fi"?"Konteksti":"Context"}: ${ctx}\n`;
+    text += `${lang==="fi"?"Ennen":"Before"}: ${lang==="fi"?cb.fi:cb.en} (${b.total})\n`;
+    text += `${lang==="fi"?"Jälkeen":"After"}: ${lang==="fi"?ca.fi:ca.en} (${a.total})\n`;
+    text += `Δ = ${delta}\n`;
+    const nb=document.getElementById("N_b").value.trim();
+    const na=document.getElementById("N_a").value.trim();
+    if(nb) text += `${lang==="fi"?"Muistiinpanot (ennen)":"Notes (before)"}: ${nb}\n`;
+    if(na) text += `${lang==="fi"?"Muistiinpanot (jälkeen)":"Notes (after)"}: ${na}\n`;
+  }
+  navigator.clipboard.writeText(text).then(()=>{
+    const btn=document.getElementById("copy");
+    const old=btn.textContent;
+    btn.textContent = (lang==="fi"?"Kopioitu":"Copied");
+    setTimeout(()=>btn.textContent=old,900);
+  });
+}
+
+function printPDF(){ window.print(); }
+
+// Wire events
+document.getElementById("fiBtn").addEventListener("click", ()=>{lang="fi"; applyLang();});
+document.getElementById("enBtn").addEventListener("click", ()=>{lang="en"; applyLang();});
+document.getElementById("modeSingle").addEventListener("click", ()=>setMode("single"));
+document.getElementById("modeCompare").addEventListener("click", ()=>setMode("compare"));
+document.getElementById("toggleTips").addEventListener("click", ()=>{setTipsVisibility(!tipsOn);});
+document.getElementById("copy").addEventListener("click", copyReport);
+document.getElementById("print").addEventListener("click", printPDF);
+document.getElementById("reset").addEventListener("click", resetAll);
+
+["aselaji","tehtava","maasto","vuodenaika","L","H","K","spread","weak","shared","notes"].forEach(id=>{
+  const el=document.getElementById(id);
+  if(el) el.addEventListener("change", updateAll);
+  if(el && el.tagName.toLowerCase()==="textarea") el.addEventListener("input", ()=>{});
+});
+
+// Build compare selects and then apply language
+buildCompareSelects();
+applyLang();
+</script>
+
+</body>
+</html>
