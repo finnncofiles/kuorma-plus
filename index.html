@@ -1,0 +1,2400 @@
+<!doctype html>
+<html lang="fi">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>KUORMA+</title>
+<style>
+:root{
+  --bg:#0b0c10; --card:#11131a; --card2:#0c0f16;
+  --border:#1f2330; --border2:#2a2f3f;
+  --text:#eaeaf0; --muted:rgba(234,234,240,.78); --muted2:rgba(234,234,240,.62);
+  --ok:rgba(46,204,113,.16); --mid:rgba(241,196,15,.16);
+  --high:rgba(230,126,34,.16); --crit:rgba(231,76,60,.16);
+  --shadow:0 10px 30px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box}
+body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;background:var(--bg);color:var(--text);margin:0}
+header{
+  background:linear-gradient(180deg,#11131a 0%, #0e1016 100%);
+  padding:14px 14px 12px;
+  border-bottom:1px solid var(--border);
+  position:sticky; top:0; z-index:10;
+}
+main{max-width:1060px;margin:auto;padding:14px}
+h1{margin:0;font-size:18px;letter-spacing:.2px}
+.small{font-size:12px;opacity:.82;line-height:1.35}
+.card{background:var(--card); border:1px solid var(--border); border-radius:14px; padding:14px; margin-bottom:12px; box-shadow:var(--shadow);}
+.card.compact{padding:12px}
+.row{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.grid{display:grid;gap:10px;grid-template-columns:repeat(2,minmax(0,1fr))}
+@media(min-width:840px){.grid{grid-template-columns:1fr 1fr}}
+.grid3{display:grid;gap:10px;grid-template-columns:repeat(3,minmax(0,1fr))}
+@media(min-width:980px){.grid3{grid-template-columns:1fr 1fr 1fr}}
+label{display:flex;gap:8px;align-items:center;font-size:13px;color:var(--muted);margin:0 0 6px}
+select,textarea,button{
+  width:100%; padding:12px 12px; border-radius:12px;
+  border:1px solid var(--border2); background:var(--card2); color:var(--text); font-size:16px;
+}
+textarea{min-height:86px;resize:vertical}
+button{background:#171b28;font-weight:900;cursor:pointer}
+button.secondary{background:#0f1320}
+button.ghost{background:transparent;border:1px solid var(--border2)}
+button:active{transform:translateY(1px)}
+.div{height:1px;background:var(--border);margin:12px 0}
+.badge{display:inline-flex;align-items:center;gap:8px;padding:8px 10px;border-radius:999px;border:1px solid var(--border2);background:var(--card2);font-size:12px;color:var(--muted)}
+.status{padding:12px;border-radius:12px;font-weight:900;line-height:1.2}
+.ok{background:var(--ok);border:1px solid rgba(46,204,113,.35)}
+.mid{background:var(--mid);border:1px solid rgba(241,196,15,.35)}
+.high{background:var(--high);border:1px solid rgba(230,126,34,.35)}
+.crit{background:var(--crit);border:1px solid rgba(231,76,60,.35)}
+.kpi{font-size:12px;color:var(--muted2);line-height:1.35}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+details{border:1px solid var(--border);border-radius:12px;background:rgba(255,255,255,.02)}
+details>summary{cursor:pointer;padding:12px;font-weight:900;list-style:none}
+details>summary::-webkit-details-marker{display:none}
+details .content{padding:0 12px 12px;color:var(--muted);line-height:1.45;font-size:13px}
+.tip{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:999px;border:1px solid var(--border2);background:var(--card2);font-size:12px;color:var(--muted);cursor:help; user-select:none;}
+.btnrow{display:grid;gap:10px;grid-template-columns:1fr}
+@media(min-width:840px){.btnrow{grid-template-columns:1fr 1fr}}
+.tabs{display:flex;gap:8px;flex-wrap:wrap}
+.tab{width:auto;padding:10px 12px;border-radius:999px;border:1px solid var(--border2);background:var(--card2);color:var(--muted);font-weight:900}
+.tab.active{background:#171b28;color:var(--text)}
+.pillbtn{width:auto;padding:10px 12px;border-radius:999px;font-size:13px;border:1px solid var(--border2);background:var(--card2);color:var(--muted);font-weight:900}
+.pillbtn.active{background:#171b28;color:var(--text)}
+.flex{display:flex;gap:10px;flex-wrap:wrap}
+.half{flex:1;min-width:280px}
+.footer{
+  font-size:14px;color:var(--muted);line-height:1.55;
+  padding:16px;border-radius:12px;border:1px solid var(--border2);
+  background:rgba(255,255,255,.02);
+}
+.footer b{color:var(--text);font-size:15px}
+hr{border:none;border-top:1px solid var(--border);margin:12px 0}
+@media print{
+  header, .noprint{display:none !important}
+  body{background:white;color:black}
+  .card{box-shadow:none;border:1px solid #ddd}
+  select,textarea,button{border:1px solid #ddd}
+}
+
+/* =========================
+   KUORMA+ v6.7 Reskin A: "retro tactical" (JA2-henkinen)
+   - Ei kopioi alkuperäisiä grafiikoita, vain fiilis: paperi/paneelit, bevel, keltainen korostus
+   ========================= */
+:root{
+  --bg:#07080c;
+  --card:#19140d;
+  --card2:#120f0a;
+  --border:#3b2f1f;
+  --border2:#2a2116;
+  --text:#e7dfc9;
+  --muted:rgba(231,223,201,.82);
+  --muted2:rgba(231,223,201,.64);
+  --ok:rgba(54,208,124,.14);
+  --mid:rgba(241,196,15,.14);
+  --high:rgba(230,126,34,.14);
+  --crit:rgba(231,76,60,.14);
+  --shadow:0 14px 40px rgba(0,0,0,.55);
+}
+
+body{
+  background:
+    radial-gradient(900px 500px at 18% 0%, rgba(199,176,107,.12), transparent 60%),
+    radial-gradient(700px 380px at 85% 18%, rgba(110,123,58,.10), transparent 55%),
+    linear-gradient(180deg,#03040a,var(--bg));
+  color:var(--text);
+}
+
+header{
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.04), rgba(0,0,0,.10)),
+    linear-gradient(180deg,#13110d,#0b0c10);
+  border-bottom:1px solid rgba(199,176,107,.22);
+}
+
+h1{letter-spacing:.6px}
+.small{opacity:.86}
+
+.card{
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.03), rgba(0,0,0,.08)),
+    linear-gradient(180deg, rgba(199,176,107,.05), transparent 30%),
+    var(--card);
+  border:1px solid rgba(199,176,107,.22);
+  box-shadow:var(--shadow);
+  position:relative;
+}
+
+.card:before{
+  content:"";
+  position:absolute;
+  left:10px; right:10px; top:10px;
+  height:1px;
+  background:linear-gradient(90deg, transparent, rgba(199,176,107,.35), transparent);
+  pointer-events:none;
+}
+
+.div{
+  background:linear-gradient(90deg, transparent, rgba(199,176,107,.22), transparent);
+}
+
+select, textarea{
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.03), rgba(0,0,0,.10)),
+    var(--card2);
+  border:1px solid rgba(199,176,107,.25);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.06);
+}
+
+button{
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.14), rgba(0,0,0,.18)),
+    #1a1d2a;
+  border:1px solid rgba(199,176,107,.26);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.10),
+    0 8px 18px rgba(0,0,0,.35);
+  letter-spacing:.2px;
+}
+button.secondary{
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.10), rgba(0,0,0,.22)),
+    #141724;
+}
+button.ghost{
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.08), rgba(0,0,0,.26)),
+    transparent;
+}
+
+.tab, .pillbtn, .badge{
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.06), rgba(0,0,0,.18)),
+    rgba(12,15,22,.55);
+  border:1px solid rgba(199,176,107,.22);
+}
+.tab.active, .pillbtn.active{
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.10), rgba(0,0,0,.12)),
+    rgba(23,27,40,.80);
+  color:var(--text);
+}
+
+.tip{
+  border:1px solid rgba(199,176,107,.22);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.10), rgba(0,0,0,.18)),
+    rgba(12,15,22,.65);
+}
+
+.status{
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.05), rgba(0,0,0,.12));
+  border:1px solid rgba(199,176,107,.20);
+}
+
+.footer{
+  background:
+    linear-gradient(180deg, rgba(199,176,107,.06), rgba(0,0,0,.06)),
+    rgba(255,255,255,.02);
+  border:1px solid rgba(199,176,107,.22);
+  font-size:15px;
+}
+.footer b{font-size:16px}
+
+
+/* --- Pixel-ish headline treatment (no external font dependency) --- */
+h1, b, .tab, .pillbtn, .badge, details>summary{
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+h1{
+  font-size: 18px;
+  text-shadow:
+    1px 0 rgba(0,0,0,.55),
+    0 1px rgba(0,0,0,.55),
+    1px 1px rgba(0,0,0,.55);
+}
+body{
+  -webkit-font-smoothing: none;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* --- Inventory-slot look for form controls --- */
+select, textarea{
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.04), rgba(0,0,0,.18)),
+    repeating-linear-gradient(90deg, rgba(199,176,107,.05) 0 2px, transparent 2px 10px),
+    repeating-linear-gradient(0deg, rgba(199,176,107,.04) 0 2px, transparent 2px 10px),
+    var(--card2);
+  border:1px solid rgba(199,176,107,.30);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.08),
+    inset 0 -1px 0 rgba(0,0,0,.35);
+}
+select:focus, textarea:focus{
+  outline: 2px solid rgba(199,176,107,.35);
+  outline-offset: 1px;
+}
+.grid > div, .grid3 > div, #beforeSelects > div, #afterSelects > div{
+  border:1px solid rgba(199,176,107,.14);
+  border-radius: 14px;
+  padding: 10px;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.02), rgba(0,0,0,.10)),
+    rgba(0,0,0,.08);
+}
+.grid > div label, .grid3 > div label, #beforeSelects > div label, #afterSelects > div label{
+  margin-bottom: 8px;
+}
+.grid > div:before, .grid3 > div:before, #beforeSelects > div:before, #afterSelects > div:before{
+  content:"";
+  display:block;
+  height:1px;
+  margin: 2px 0 10px;
+  background: linear-gradient(90deg, transparent, rgba(199,176,107,.28), transparent);
+}
+
+/* --- Inline help boxes (mobile-friendly) --- */
+.helpbox{
+  margin-top:10px;
+  padding:10px 12px;
+  border-radius:12px;
+  border:1px solid rgba(199,176,107,.22);
+  background:
+    linear-gradient(180deg, rgba(199,176,107,.07), rgba(0,0,0,.08)),
+    rgba(255,255,255,.02);
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.45;
+}
+.helpbox strong{ color: var(--text); }
+.helpbox.hidden{ display:none; }
+.tip{
+  width:auto;
+  padding:6px 10px;
+  gap:8px;
+}
+.tip::before{
+  content:"ℹ";
+  font-weight:900;
+  color: rgba(199,176,107,.95);
+}
+
+
+/* V5 inputs */
+input[type="number"]{
+  background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(0,0,0,.18)), var(--card2);
+  border:1px solid rgba(199,176,107,.30);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.08), inset 0 -1px 0 rgba(0,0,0,.35);
+  color: var(--text);
+}
+.modrow{ display:flex; gap:10px; align-items:flex-start; }
+.modrow .col{ flex:1; }
+.modtag{ font-size:12px; padding:4px 8px; border-radius:999px; border:1px solid rgba(199,176,107,.22); color: var(--muted); }
+.modtag.must{ color: var(--text); border-color: rgba(199,176,107,.38); background: rgba(199,176,107,.08); }
+.smallnote{ font-size:12px; color: var(--muted); }
+
+
+/* responsive v5 */
+@media (max-width: 820px){
+  .grid3{grid-template-columns:1fr}
+  .modrow{flex-direction:column}
+  .modrow .col{max-width:none !important}
+  #modules .modrow{gap:8px}
+}
+@media (max-width: 420px){
+  .kpi > div{flex-direction:column !important; align-items:flex-start !important}
+  .kpi > div > div{width:100%}
+}
+
+
+.kpi div{flex-wrap:wrap}
+/* kpi-flex-wrap */
+
+/* v5.2 module tag overflow fix */
+#modules label{display:flex; flex-wrap:wrap; gap:8px; align-items:center}
+#modules label b{flex:1 1 auto; min-width:0}
+#modules .modtag{display:inline-block; max-width:100%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+@media (max-width: 520px){
+  #modules .modtag{font-size:11px; padding:3px 6px}
+}
+
+
+@media (max-width: 520px){
+  .modrow .col[style*="max-width:150px"]{max-width:none !important}
+}
+
+
+/* v6 scale meter */
+.scaleWrap{}
+.scaleBar{
+  position:relative;
+  height:44px;
+  border-radius:16px;
+  overflow:hidden;
+  border:1px solid rgba(199,176,107,.28);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.06), inset 0 -1px 0 rgba(0,0,0,.35);
+  display:grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+}
+.scaleBar .zone{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:12px;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  color: rgba(235,226,201,.90);
+  background: rgba(255,255,255,.03);
+  border-right:1px solid rgba(0,0,0,.35);
+}
+.scaleBar .zone:last-child{border-right:none}
+.scaleMarker{
+  position:absolute;
+  top:-6px;
+  width:12px;
+  height:56px;
+  border-radius:10px;
+  background: linear-gradient(180deg, rgba(255,255,255,.35), rgba(0,0,0,.2));
+  border:1px solid rgba(235,226,201,.55);
+  box-shadow: 0 6px 18px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.20);
+  transform: translateX(-50%);
+}
+.scaleTicks{
+  display:flex;
+  justify-content:space-between;
+  color: var(--muted);
+  font-size:12px;
+  margin-top:6px;
+  padding:0 2px;
+}
+@media (max-width: 520px){
+  .scaleBar{height:52px; grid-template-columns: 1fr 1fr}
+  .scaleBar .zone{font-size:11px}
+}
+
+
+/* v6.7 scale label logic */
+.scaleBar .zone .short{display:none}
+.scaleBar .zone .full{display:inline}
+@media (max-width: 520px){
+  .scaleBar{height:52px; grid-template-columns: 1fr 1fr 1fr 1fr}
+  .scaleBar .zone{font-size:10px; letter-spacing:.06em; padding:0 4px}
+  .scaleBar .zone .full{display:none}
+  .scaleBar .zone .short{display:inline}
+}
+
+
+/* v6.7: hide compare behind advanced */
+#modeCompare{display:none}
+#btnAdvanced{opacity:.9}
+#btnAdvanced.active{opacity:1}
+
+
+/* v6.7 unified Result + Risk scale */
+.unifiedResult{padding:18px}
+.unifiedTop{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;flex-wrap:wrap}
+.unifiedScore{font-size:48px;line-height:1;font-weight:800;letter-spacing:.5px}
+.unifiedBand{font-size:14px;letter-spacing:2px;text-transform:uppercase;padding:8px 12px;border-radius:999px;border:1px solid rgba(255,255,255,.18);background:rgba(0,0,0,.22)}
+.unifiedBand.good{box-shadow:0 0 0 1px rgba(0,255,100,.18) inset}
+.unifiedBand.ok{box-shadow:0 0 0 1px rgba(255,220,0,.18) inset}
+.unifiedBand.elev{box-shadow:0 0 0 1px rgba(255,140,0,.18) inset}
+.unifiedBand.risk{box-shadow:0 0 0 1px rgba(255,60,60,.18) inset}
+
+.scaleWrap{margin-top:16px}
+.scaleBar{position:relative;height:22px;border-radius:999px;overflow:hidden;border:1px solid rgba(255,255,255,.18);background:rgba(0,0,0,.25)}
+.scaleSeg{height:100%;float:left}
+.segLight{width:45%;background:linear-gradient(90deg, rgba(0,180,90,.85), rgba(0,220,120,.85))}
+.segNormal{width:25%;background:linear-gradient(90deg, rgba(255,210,0,.85), rgba(255,230,80,.85))}
+.segElev{width:25%;background:linear-gradient(90deg, rgba(255,140,0,.9), rgba(255,170,40,.9))}
+.segRisk{width:5%;background:linear-gradient(90deg, rgba(220,40,40,.95), rgba(255,70,70,.95))}
+
+.scaleMarker{position:absolute;top:-8px;width:0;height:0;border-left:7px solid transparent;border-right:7px solid transparent;border-top:10px solid rgba(255,255,255,.92);filter:drop-shadow(0 2px 6px rgba(0,0,0,.6));transform:translateX(-7px)}
+.scaleNums{display:flex;justify-content:space-between;font-size:12px;opacity:.85;margin-top:8px}
+.scaleNums span{min-width:28px;text-align:center}
+
+.unifiedExplain{margin-top:14px;opacity:.92}
+
+
+/* v6.9 JA2-style HUD ladder */
+.hudCard{
+  position:relative;
+  padding:18px;
+  border-radius:22px;
+  border:1px solid rgba(255,255,255,.14);
+  background:
+    radial-gradient(1200px 500px at 20% -10%, rgba(255,210,120,.10), transparent 55%),
+    radial-gradient(900px 480px at 90% 20%, rgba(120,200,255,.08), transparent 55%),
+    linear-gradient(180deg, rgba(25,25,25,.74), rgba(10,10,10,.78));
+  box-shadow:
+    0 18px 44px rgba(0,0,0,.55),
+    inset 0 0 0 1px rgba(255,255,255,.06);
+  overflow:hidden;
+}
+.hudCard:before{
+  content:"";
+  position:absolute; inset:0;
+  background:
+    repeating-linear-gradient(180deg,
+      rgba(255,255,255,.045) 0px,
+      rgba(255,255,255,.045) 1px,
+      rgba(0,0,0,0) 3px,
+      rgba(0,0,0,0) 6px);
+  opacity:.16;
+  pointer-events:none;
+}
+.hudTopRow{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap;position:relative;z-index:1}
+.hudScore{font-size:54px;line-height:1;font-weight:900;letter-spacing:.5px}
+.hudBandPill{
+  font-size:12px;letter-spacing:2px;text-transform:uppercase;
+  padding:9px 12px;border-radius:999px;
+  border:1px solid rgba(255,255,255,.18);
+  background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(0,0,0,.22));
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,.30);
+}
+.hudBandPill.good{box-shadow: 0 0 0 1px rgba(0,255,120,.22) inset, 0 0 18px rgba(0,255,120,.10)}
+.hudBandPill.normal{box-shadow: 0 0 0 1px rgba(255,220,0,.22) inset, 0 0 18px rgba(255,220,0,.10)}
+.hudBandPill.elev{box-shadow: 0 0 0 1px rgba(255,140,0,.24) inset, 0 0 18px rgba(255,140,0,.10)}
+.hudBandPill.risk{box-shadow: 0 0 0 1px rgba(255,70,70,.24) inset, 0 0 18px rgba(255,70,70,.12)}
+
+.ladderWrap{margin-top:16px;position:relative;z-index:1}
+.ladderBar{
+  display:grid;
+  grid-template-columns:repeat(20, 1fr);
+  gap:6px;
+  padding:10px 10px 14px;
+  border-radius:16px;
+  background:linear-gradient(180deg, rgba(0,0,0,.30), rgba(255,255,255,.05));
+  border:1px solid rgba(255,255,255,.12);
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,.28);
+}
+.ladSeg{
+  height:16px;
+  border-radius:5px;
+  background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.10);
+  box-shadow: inset 0 0 8px rgba(0,0,0,.35);
+}
+.ladSeg.on{
+  border-color: rgba(255,255,255,.18);
+  box-shadow:
+    inset 0 0 10px rgba(0,0,0,.35),
+    0 0 14px rgba(255,255,255,.08);
+}
+.ladSeg.on.good{background:linear-gradient(180deg, rgba(20,220,120,.92), rgba(10,130,70,.92)); box-shadow: inset 0 0 10px rgba(0,0,0,.35), 0 0 18px rgba(0,255,120,.20)}
+.ladSeg.on.normal{background:linear-gradient(180deg, rgba(255,230,90,.94), rgba(190,150,0,.92)); box-shadow: inset 0 0 10px rgba(0,0,0,.35), 0 0 18px rgba(255,220,0,.18)}
+.ladSeg.on.elev{background:linear-gradient(180deg, rgba(255,170,70,.95), rgba(190,90,10,.92)); box-shadow: inset 0 0 10px rgba(0,0,0,.35), 0 0 18px rgba(255,140,0,.18)}
+.ladSeg.on.risk{background:linear-gradient(180deg, rgba(255,90,90,.95), rgba(170,20,20,.92)); box-shadow: inset 0 0 10px rgba(0,0,0,.35), 0 0 18px rgba(255,80,80,.22)}
+
+.ladderTicks{display:flex;justify-content:space-between;margin-top:10px;font-size:12px;opacity:.85;padding:0 2px}
+.ladderTicks span{min-width:22px;text-align:center}
+
+.hudHint{margin-top:14px;opacity:.92;position:relative;z-index:1}
+
+
+.bandPill.bLight{ border-color: rgba(120,255,170,.45); background: rgba(120,255,170,.08); }
+.bandPill.bNorm{ border-color: rgba(160,210,255,.40); background: rgba(160,210,255,.06); }
+.bandPill.bElev{ border-color: rgba(255,220,120,.45); background: rgba(255,220,120,.06); }
+.bandPill.bRisk{ border-color: rgba(255,120,120,.45); background: rgba(255,120,120,.06); }
+
+.ladSeg.cLight{ background: rgba(120,255,170,.30); border-color: rgba(120,255,170,.35); }
+.ladSeg.cNorm{ background: rgba(160,210,255,.25); border-color: rgba(160,210,255,.32); }
+.ladSeg.cElev{ background: rgba(255,220,120,.25); border-color: rgba(255,220,120,.32); }
+.ladSeg.cRisk{ background: rgba(255,120,120,.22); border-color: rgba(255,120,120,.30); }
+.ladSeg.edge{ box-shadow: 0 0 0 1px rgba(255,255,255,.18) inset, 0 0 10px rgba(255,255,255,.08); }
+</style>
+
+<style>
+.ladderWrap{position:relative;margin-top:10px;padding:10px;border-radius:14px;background:rgba(0,0,0,0.20);border:1px solid rgba(255,255,255,0.06)}
+.ladder{display:flex;gap:2px;align-items:center;justify-content:stretch}
+.ladderSeg{flex:1;height:18px;border-radius:6px;background:rgba(255,255,255,0.06);border:1px solid rgba(0,0,0,0.35)}
+.ladderMarker{position:absolute;top:6px;left:0;width:0;height:0;border-left:8px solid transparent;border-right:8px solid transparent;border-bottom:12px solid #f9a825;filter:drop-shadow(0 2px 6px rgba(0,0,0,0.6))}
+.axis{display:flex;justify-content:space-between;font-size:12px;opacity:0.85;margin-top:8px;padding:0 6px}
+.unifiedRow{display:flex;gap:14px;align-items:flex-start;justify-content:space-between}
+.unifiedLeft{min-width:120px}
+.bigNumber{font-size:72px;line-height:0.95;font-weight:800;letter-spacing:1px}
+.smallLabel{font-size:14px;opacity:0.85;margin-bottom:6px}
+.bandPill{display:inline-block;padding:8px 12px;border-radius:999px;font-weight:800;letter-spacing:0.5px}
+.hintText{margin-top:10px;opacity:0.9}
+@media (max-width:420px){
+  .bigNumber{font-size:64px}
+}
+</style>
+
+</head>
+<body>
+<header>
+  <div class="row">
+    <div>
+      <h1 data-i18n="title">KUORMA+ </h1>
+      <div class="small" data-i18n="subtitle">Julkinen analyysityökalu sotilaan kuormituspaineen arviointiin. Ei kilogrammalaskuri, vaan päätöstuen runko.</div>
+    </div>
+    <div class="tabs noprint">
+      <button class="tab active" id="modeSingle" type="button" data-i18n="mode_single">Yksi arvio</button>
+      <button class="tab" id="btnAdvanced" type="button" data-i18n="btn_advanced">Lisätoiminnot</button>
+      <button class="tab" id="modeCompare" type="button" data-i18n="mode_compare">Ennen–jälkeen</button>
+      <button class="pillbtn active" id="fiBtn" type="button">FI</button>
+      <button class="pillbtn" id="enBtn" type="button">EN</button>
+      <div class="badge"><span class="mono">v6.7</span></div>
+    </div>
+  </div>
+</header>
+
+<main>
+
+  <div class="card compact noprint">
+    <details open>
+      <summary data-i18n="how_title">Mitä tämä tekee</summary>
+      <div class="content" data-i18n="how_body">
+        Täytä tehtäväkonteksti ja arvioi tekijät. KUORMA+ tuottaa kuormitusindeksin ja toimenpidesuosituksen.
+        Ennen–jälkeen-tilassa voit testata yhtä muutosta kerrallaan ja katsoa, paraneeko tilanne.
+      </div>
+    </details>
+  </div>
+
+  <div class="card">
+    <div class="row">
+      <b data-i18n="ctx_title">Tehtäväkonteksti</b>
+      <div class="kpi" id="derivedCtx">–</div>
+    </div>
+    <div class="div"></div>
+
+    <div class="grid">
+      <div>
+        <label><span data-i18n="ctx_branch">Aselaji / joukkotyyppi</span><span class="tip" id="tip_branch">Selite</span></label>
+        <select id="aselaji">
+          <option value="" data-i18n="opt_choose">Valitse…</option>
+          <option data-i18n="br_infantry">Jalkaväki</option>
+          <option data-i18n="br_jaeger">Jääkäriyksikkö</option>
+          <option data-i18n="br_recon">Tiedustelujoukko</option>
+          <option data-i18n="br_engineer">Pioneerijoukko</option>
+          <option data-i18n="br_artillery">Tykistöjoukko</option>
+          <option data-i18n="br_mortar">Kranaatinheitinjoukko</option>
+          <option data-i18n="br_airdef">Ilmatorjuntajoukko</option>
+          <option data-i18n="br_at">Panssarintorjuntajoukko</option>
+          <option data-i18n="br_cis">Johtamisjärjestelmäjoukko</option>
+          <option data-i18n="br_fso">Tulenjohtoryhmä</option>
+          <option data-i18n="br_log">Huoltojoukko</option>
+          <option data-i18n="br_med">Lääkintäjoukko</option>
+          <option data-i18n="br_other">Muu</option>
+        </select>
+      </div>
+
+      <div>
+        <label><span data-i18n="ctx_task">Tehtävätyyppi</span><span class="tip" id="tip_task">Selite</span></label>
+        <select id="tehtava">
+          <option value="" data-i18n="opt_choose">Valitse…</option>
+          <option data-i18n="task_def">Puolustus</option>
+          <option data-i18n="task_delay">Viivytys</option>
+          <option data-i18n="task_attack">Hyökkäys</option>
+          <option data-i18n="task_breach">Raivaus</option>
+          <option data-i18n="task_recon">Tiedustelu</option>
+          <option data-i18n="task_security">Suojaus / vartiointi</option>
+          <option data-i18n="task_islands">Saarten miehitys / saaristotaistelu</option>
+          <option data-i18n="task_other">Muu</option>
+        </select>
+      </div>
+
+      <div>
+        <label><span data-i18n="ctx_terrain">Maastotyyppi</span><span class="tip" id="tip_terrain">Selite</span></label>
+        <select id="maasto">
+          <option value="" data-i18n="opt_choose">Valitse…</option>
+          <option data-i18n="ter_open">Avoin maasto</option>
+          <option data-i18n="ter_forest">Metsämaasto</option>
+          <option data-i18n="ter_urban">Rakennettu alue</option>
+          <option data-i18n="ter_archipelago">Saaristo / rannikkoalue</option>
+          <option data-i18n="ter_hard">Vaikeakulkuinen (suo, kivikko)</option>
+          <option data-i18n="ter_mixed">Sekamaasto</option>
+        </select>
+      </div>
+
+      <div>
+        <label><span data-i18n="ctx_season">Vuodenaika</span><span class="tip" id="tip_season">Selite</span></label>
+        <select id="vuodenaika">
+          <option value="" data-i18n="opt_choose">Valitse…</option>
+          <option data-i18n="sea_summer">Kesä</option>
+          <option data-i18n="sea_spring">Kevät (loska)</option>
+          <option data-i18n="sea_autumn">Syksy (märkä)</option>
+          <option data-i18n="sea_winter">Talvi</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="row">
+      <b data-i18n="inputs_title">Arvioitavat tekijät</b>
+      <div class="kpi" data-i18n="inputs_kpi">Täytä valinnat. Indeksi päivittyy automaattisesti.</div>
+    </div>
+    <div class="div"></div>
+
+    <div id="singleWrap">
+      <div class="grid3">
+        <div>
+          <label><span data-i18n="L_lbl">Liikevaatimus (L)</span><span class="tip" id="tip_L">Selite</span></label>
+          <select id="L">
+            <option value="" data-i18n="opt_choose">Valitse…</option>
+            <option value="1" data-i18n="L_1">Paikallaan / lyhyet siirtymät</option>
+            <option value="3" data-i18n="L_3">Sekamuotoinen liike</option>
+            <option value="5" data-i18n="L_5">Pitkä siirtymä / korkea tempo</option>
+          </select>
+        </div>
+        <div>
+          <label><span data-i18n="H_lbl">Huoltovarmuus (H)</span><span class="tip" id="tip_H">Selite</span></label>
+          <select id="H">
+            <option value="" data-i18n="opt_choose">Valitse…</option>
+            <option value="1" data-i18n="H_1">Täydennys varma &lt;24h</option>
+            <option value="3" data-i18n="H_3">Epävarma 24–72h</option>
+            <option value="5" data-i18n="H_5">Ei varmaa huoltoa &gt;72h</option>
+          </select>
+        </div>
+        <div>
+          <label><span data-i18n="K_lbl">Kontaktiriski (K)</span><span class="tip" id="tip_K">Selite</span></label>
+          <select id="K">
+            <option value="" data-i18n="opt_choose">Valitse…</option>
+            <option value="1" data-i18n="K_1">Matala</option>
+            <option value="3" data-i18n="K_3">Keskitaso</option>
+            <option value="5" data-i18n="K_5">Korkea</option>
+          </select>
+        </div>
+
+        <div>
+          <label><span data-i18n="spread_lbl">Kuorman hajonta (D)</span><span class="tip" id="tip_spread">Selite</span></label>
+          <select id="spread">
+            <option value="" data-i18n="opt_choose">Valitse…</option>
+            <option value="0" data-i18n="spread_0">Hallittu (&lt;5 kg)</option>
+            <option value="1" data-i18n="spread_1">Merkittävä (5–10 kg)</option>
+            <option value="2" data-i18n="spread_2">Suuri (&gt;10 kg)</option>
+          </select>
+        </div>
+        <div>
+          <label><span data-i18n="weak_lbl">Heikoin lenkki (W)</span><span class="tip" id="tip_weak">Selite</span></label>
+          <select id="weak">
+            <option value="0" data-i18n="weak_0">Ei tunnistettua</option>
+            <option value="1" data-i18n="weak_1">Yksi rajoite</option>
+            <option value="2" data-i18n="weak_2">Useita rajoitteita</option>
+          </select>
+        </div>
+        <div>
+          <label><span data-i18n="shared_lbl">Kalustonjako tehty? (−1)</span><span class="tip" id="tip_shared">Selite</span></label>
+          <select id="shared">
+            <option value="0" data-i18n="shared_0">Ei tarkistettu</option>
+            <option value="1" data-i18n="shared_1">Kyllä</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="div"></div>
+      <label><span data-i18n="notes_lbl">Muistiinpanot</span><span class="tip" id="tip_notes">Selite</span></label>
+      <textarea id="notes"></textarea>
+    </div>
+
+    <div id="compareWrap" style="display:none">
+      <div class="flex">
+        <div class="half">
+          <b data-i18n="before">Ennen</b>
+          <div class="div"></div>
+          <div class="grid3" id="beforeSelects"></div>
+          <div class="div"></div>
+          <label data-i18n="notes_lbl">Muistiinpanot</label>
+          <textarea id="N_b"></textarea>
+        </div>
+
+        <div class="half">
+          <b data-i18n="after">Jälkeen</b>
+          <div class="div"></div>
+          <div class="grid3" id="afterSelects"></div>
+          <div class="div"></div>
+          <label data-i18n="notes_lbl">Muistiinpanot</label>
+          <textarea id="N_a"></textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="row">
+      <b data-i18n="result_title">Tulos</b>
+      <div class="badge mono" id="formula">–</div>
+    </div>
+    <div class="div"></div>
+
+    <div class="scaleWrap" aria-label="KUORMA+ risk ladder">
+  <div class="hudTopRow">
+    <div>
+      <div class="mono small muted" data-i18n="scale_points_label">Points</div>
+      <div class="hudScore mono" id="unifiedScore">0</div>
+    </div>
+    <div class="hudBandPill mono" id="unifiedBand">–</div>
+  </div>
+
+  <div class="ladderWrap">
+    <div class="ladderBar" id="unifiedLadder"></div>
+    <div class="ladderTicks mono" aria-hidden="true">
+      <span>0</span><span>5</span><span>10</span><span>15</span><span>20+</span>
+    </div>
+  </div>
+
+  <!-- legacy marker kept for backwards compatibility -->
+  <div class="scaleMarker" id="unifiedMarker" aria-hidden="true" style="display:none"></div>
+</div>
+
+    <div id="singleResult">
+      <div id="out" class="status ok" data-i18n="fill_req">Täytä pakolliset kentät.</div>
+      <div class="div"></div>
+      <div class="kpi" id="details">–</div>
+      <div class="div"></div>
+      <div class="kpi" id="advice">–</div>
+
+      <div class="div"></div>
+      <div class="kpi" id="valueBlock">
+        <b data-i18n="value_title">Mitä tulos auttaa tekemään</b><br>
+        <span class="small" data-i18n="value_desc">
+          Tämä ei ole kilogrammalaskuri. KUORMA+ auttaa tunnistamaan, milloin tehtävä, maasto, vuodenaika ja huollon epävarmuus nostavat kuormituspaineen tasolle, joka alkaa syödä liikettä ja kestävyyttä.
+        </span>
+        <ul style="margin:10px 0 0 18px">
+          <li><b data-i18n="value_h1">Ennen tehtävää:</b> <span data-i18n="value_b1">karsi, jaa yhteiskalusto, muokkaa tempoa tai huoltosuunnitelmaa.</span></li>
+          <li><b data-i18n="value_h2">Lähtötarkastus:</b> <span data-i18n="value_b2">tasaa ryhmän sisäinen kuormahajonta ja poista “mukavuuskuorma”.</span></li>
+          <li><b data-i18n="value_h3">Jälkiarvio:</b> <span data-i18n="value_b3">kirjaa miksi tempo romahti ja mitä päätöksiä muutetaan ensi kerralla.</span></li>
+        </ul>
+      </div>
+
+</div>
+
+    <div id="compareResult" style="display:none">
+      <div class="row">
+        <div>
+          <b data-i18n="delta_title">Muutos</b>
+          <div class="mono" id="deltaLine">–</div>
+        </div>
+        <div class="kpi" id="deltaHint">–</div>
+      </div>
+      <hr>
+      <div class="flex">
+        <div class="half">
+          <div id="outB" class="status ok">–</div>
+          <div class="div"></div>
+          <div class="kpi" id="detailsB">–</div>
+          <div class="div"></div>
+          <div class="kpi" id="adviceB">–</div>
+        </div>
+        <div class="half">
+          <div id="outA" class="status ok">–</div>
+          <div class="div"></div>
+          <div class="kpi" id="detailsA">–</div>
+          <div class="div"></div>
+          <div class="kpi" id="adviceA">–</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+<div class="scaleTicks">
+        <span>0</span><span>5</span><span>10</span><span>15</span><span id="scaleMaxTick">20+</span>
+      </div>
+      <div class="kpi" style="margin:10px 0 0 0">
+        <div style="display:flex; justify-content:space-between; gap:10px; align-items:center">
+          <div>
+            <div class="muted" data-i18n="scale_score_lbl">Nykyinen</div>
+            <div style="font-size:18px"><b id="scaleScore">–</b></div>
+          </div>
+          <div>
+            <div class="muted" data-i18n="scale_band_lbl">Vyöhyke</div>
+            <div style="font-size:18px"><b id="scaleBand">–</b></div>
+          </div>
+          <div>
+            <div class="muted" data-i18n="scale_hint_lbl">Vihje</div>
+            <div class="small muted" id="scaleHint">–</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="helpbox" style="margin-top:12px">
+      <b data-i18n="scale_takeaway_title">Mitä tästä seuraa</b>
+      <div class="small" data-i18n="scale_takeaway">
+        Kun pisteet siirtyvät kohonneelle tai korkean riskin alueelle, ratkaisu ei yleensä ole “uusi reppu”.
+        Ratkaisu on tehtävän rajaus, työjako, huoltosuunnitelma ja turhan varautumisen karsinta.
+      </div>
+    </div>
+  </div>
+
+  <div class="div"></div>
+<div class="card" id="v5Card">
+    <h2 data-i18n="v5_title">Kuormabudjetti ja moduulit (V5)</h2>
+    <p class="muted" data-i18n="v5_desc">
+      Tämä osio muuttaa indeksin toimintaohjeeksi: arvioi realistinen kokonaiskuormabudjetti ja rakenna kuorma moduuleista.
+      Tavoite ei ole täydellinen totuus, vaan parempi päätös.
+    </p>
+
+    <div class="grid3" style="margin-top:10px">
+      <div>
+        <label data-i18n="v5_bw_lbl">Sotilaan paino (kg)</label>
+        <input id="bw" type="number" inputmode="decimal" min="40" max="160" step="1" value="85" style="width:100%; padding:10px; border-radius:12px">
+        <div class="helpbox" id="bwHelp"><strong data-i18n="v5_note">Huom:</strong> <span data-i18n="v5_bw_tip">Budjetti lasketaan prosenttina kehonpainosta ja säädetään olosuhteilla.</span></div>
+      </div>
+      <div>
+        <label data-i18n="v5_budget_lbl">Suositeltu kokonaiskuormabudjetti</label>
+        <div class="kpi" style="margin:0">
+          <div style="display:flex; justify-content:space-between; gap:10px; align-items:center">
+            <div>
+              <div class="muted" data-i18n="v5_budget_base">Perus</div>
+              <div style="font-size:18px"><b id="budgetBase">–</b></div>
+            </div>
+            <div>
+              <div class="muted" data-i18n="v5_budget_adj">Säädetty</div>
+              <div style="font-size:18px"><b id="budgetAdj">–</b></div>
+            </div>
+            <div>
+              <div class="muted" data-i18n="v5_budget_zone">Vyöhyke</div>
+              <div style="font-size:18px"><b id="budgetZone">–</b></div>
+            </div>
+          </div>
+          <div class="small muted" id="budgetExpl">–</div>
+        </div>
+      </div>
+      <div>
+        <label data-i18n="v5_est_lbl">Arvioitu kuorma moduuleista</label>
+        <div class="kpi" style="margin:0">
+          <div style="display:flex; justify-content:space-between; gap:10px; align-items:center">
+            <div>
+              <div class="muted" data-i18n="v5_est_min">Min</div>
+              <div style="font-size:18px"><b id="estMin">–</b></div>
+            </div>
+            <div>
+              <div class="muted" data-i18n="v5_est_target">Valittu</div>
+              <div style="font-size:18px"><b id="estSel">–</b></div>
+            </div>
+            <div>
+              <div class="muted" data-i18n="v5_est_max">Max</div>
+              <div style="font-size:18px"><b id="estMax">–</b></div>
+            </div>
+          </div>
+          <div class="small muted" id="deltaExpl">–</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="div"></div>
+
+    <h3 data-i18n="v5_modules_title">Moduulit</h3>
+    <p class="muted" data-i18n="v5_modules_desc">
+      Valitse moduulit ja arvioi taso. Työkalu ehdottaa automaattisesti pakollisia (tehtävä ja olosuhteet), mutta johtaja päättää.
+    </p>
+
+    <div id="modules" class="grid" style="margin-top:10px"></div>
+
+    <div class="div"></div>
+
+    <h3 data-i18n="v5_actions_title">Kevennä ensin tästä</h3>
+    <div class="kpi" style="margin:0">
+      <ol id="actionsList" style="margin:10px 0 0 18px"></ol>
+    </div>
+  </div>
+
+  <div class="div"></div>
+
+
+  <div class="card noprint">
+    <div class="row">
+      <b data-i18n="tools_title">Työkalut</b>
+      <div class="kpi" data-i18n="tools_kpi">Kopioi raportti tai tulosta PDF.</div>
+    </div>
+    <div class="div"></div>
+    <div class="btnrow">
+      <button type="button" id="copy" data-i18n="btn_copy">Kopioi raportti</button>
+      <button type="button" id="print" class="ghost" data-i18n="btn_pdf">Tulosta / PDF</button>
+    </div>
+    <div class="div"></div>
+    <div class="btnrow">
+      <button type="button" id="reset" class="ghost" data-i18n="btn_reset">Nollaa</button>
+      <button type="button" id="toggleTips" class="secondary" data-i18n="btn_tips">Selitteet päälle/pois</button>
+    </div>
+  </div>
+
+  <div class="card compact">
+    <div class="footer">
+      <b>KUORMA+ © 2026 Tatu Leppänen (finnncofiles)</b><br><br>
+      <div id="licenseText"></div>
+    </div>
+  </div>
+
+</main>
+
+<script>
+
+// === Unified risk band thresholds (single source of truth) ===
+// 0–9   = LIGHT
+// 10–14 = NORMAL
+// 15–19 = ELEVATED
+// 20+   = HIGH RISK
+const BAND = { LIGHT_MAX: 9, NORMAL_MAX: 14, ELEV_MAX: 19 };
+
+function bandKey(total){
+  if(total <= BAND.LIGHT_MAX) return "light";
+  if(total <= BAND.NORMAL_MAX) return "normal";
+  if(total <= BAND.ELEV_MAX) return "elevated";
+  return "risk";
+}
+
+function bandLabel(total){
+  const k = bandKey(total);
+  // Prefer i18n keys if available
+  const map = {
+    light:  {fi:"Kevyt",       en:"Light"},
+    normal: {fi:"Normaali",    en:"Normal"},
+    elevated:{fi:"Kohonnut",   en:"Elevated"},
+    risk:   {fi:"Korkea riski",en:"High risk"}
+  };
+  const lang = (window.__lang || "fi");
+  return (map[k] && map[k][lang]) ? map[k][lang] : k.toUpperCase();
+}
+
+const I18N = {
+  fi: {
+    title:"KUORMA+",
+    subtitle:"Julkinen analyysityökalu sotilaan kuormituspaineen arviointiin. Ei kilogrammalaskuri, vaan päätöstuen runko.",
+    scale_points_label:"Pisteet",
+    scale_current_label:"Nykyinen",
+    mode_single:"Yksi arvio",
+    mode_compare:"Ennen–jälkeen",
+    how_title:"Mitä tämä tekee",
+    how_body:"Täytä tehtäväkonteksti ja arvioi tekijät. KUORMA+ tuottaa kuormitusindeksin ja toimenpidesuosituksen. Ennen–jälkeen-tilassa voit testata yhtä muutosta kerrallaan ja katsoa, paraneeko tilanne.",
+    ctx_title:"Tehtäväkonteksti",
+    ctx_branch:"Aselaji / joukkotyyppi",
+    ctx_task:"Tehtävätyyppi",
+    ctx_terrain:"Maastotyyppi",
+    ctx_season:"Vuodenaika",
+    inputs_title:"Arvioitavat tekijät",
+    inputs_kpi:"Täytä valinnat. Indeksi päivittyy automaattisesti.",
+    result_title:"Tulos",
+    tools_title:"Työkalut",
+    tools_kpi:"Kopioi raportti tai tulosta PDF.",
+    btn_copy:"Kopioi raportti",
+    btn_pdf:"Tulosta / PDF",
+    btn_reset:"Nollaa",
+    btn_tips:"Selitteet päälle/pois",
+    fill_req:"Täytä pakolliset kentät.",
+    delta_title:"Muutos",
+    before:"Ennen",
+    after:"Jälkeen",
+    opt_choose:"Valitse…",
+    br_infantry:"Jalkaväki", br_jaeger:"Jääkäriyksikkö", br_recon:"Tiedustelujoukko", br_engineer:"Pioneerijoukko",
+    br_artillery:"Tykistöjoukko", br_mortar:"Kranaatinheitinjoukko", br_airdef:"Ilmatorjuntajoukko", br_at:"Panssarintorjuntajoukko",
+    br_cis:"Johtamisjärjestelmäjoukko", br_fso:"Tulenjohtoryhmä", br_log:"Huoltojoukko", br_med:"Lääkintäjoukko", br_other:"Muu",
+    task_def:"Puolustus", task_delay:"Viivytys", task_attack:"Hyökkäys", task_breach:"Raivaus", task_recon:"Tiedustelu",
+    task_security:"Suojaus / vartiointi", task_islands:"Saarten miehitys / saaristotaistelu", task_other:"Muu",
+    ter_open:"Avoin maasto", ter_forest:"Metsämaasto", ter_urban:"Rakennettu alue", ter_archipelago:"Saaristo / rannikkoalue",
+    ter_hard:"Vaikeakulkuinen (suo, kivikko)", ter_mixed:"Sekamaasto",
+    sea_summer:"Kesä", sea_spring:"Kevät (loska)", sea_autumn:"Syksy (märkä)", sea_winter:"Talvi",
+    L_lbl:"Liikevaatimus (L)", H_lbl:"Huoltovarmuus (H)", K_lbl:"Kontaktiriski (K)",
+    spread_lbl:"Kuorman hajonta (D)", weak_lbl:"Heikoin lenkki (W)", shared_lbl:"Kalustonjako tehty? (−1)",
+    notes_lbl:"Muistiinpanot",
+    L_1:"Paikallaan / lyhyet siirtymät", L_3:"Sekamuotoinen liike", L_5:"Pitkä siirtymä / korkea tempo",
+    H_1:"Täydennys varma <24h", H_3:"Epävarma 24–72h", H_5:"Ei varmaa huoltoa >72h",
+    K_1:"Matala", K_3:"Keskitaso", K_5:"Korkea",
+    spread_0:"Hallittu (<5 kg)", spread_1:"Merkittävä (5–10 kg)", spread_2:"Suuri (>10 kg)",
+    weak_0:"Ei tunnistettua", weak_1:"Yksi rajoite", weak_2:"Useita rajoitteita",
+    shared_0:"Ei tarkistettu", shared_1:"Kyllä",
+L_3:"Sekamuotoinen liike",
+    L_5:"Pitkä siirtymä / korkea tempo",
+    H_lbl:"Huoltovarmuus (H)",
+    H_3:"Epävarma 24–72h",
+    H_5:"Ei varmaa huoltoa >72h",
+    K_lbl:"Kontaktiriski (K)",
+    K_3:"Keskitaso",
+    K_5:"Korkea",
+    spread_1:"Merkittävä (5–10 kg)",
+    spread_2:"Suuri (>10 kg)",
+    weak_lbl:"Heikoin lenkki",
+    weak_1:"Yksi rajoite",
+    weak_2:"Useita rajoitteita",
+    shared_lbl:"Kalustonjako tehty",
+    shared_1:"Kyllä",
+    task_attack:"Hyökkäys",
+    task_breach:"Raivaus",
+    task_delay:"Viivytys",
+    task_islands:"Saari- ja rannikkotoiminta",
+    task_other:"Muu",
+    task_recon:"Tiedustelu",
+    ter_archipelago:"Saaristo",
+    ter_forest:"Metsämaasto",
+    ter_mixed:"Sekamaasto",
+    ter_urban:"Rakennettu alue",
+    br_airdef:"Ilmatorjunta",
+    br_at:"Panssarintorjunta",
+    br_engineer:"Pioneeri",
+    br_fso:"Tulenjohto",
+    br_jaeger:"Jääkäriyksikkö",
+    br_log:"Huolto",
+    br_med:"Lääkintä",
+    br_mortar:"Kranaatinheitin",
+    br_other:"Muu",
+    br_recon:"Tiedustelu",
+    sea_autumn:"Syksy (märkä)",
+    sea_spring:"Kevät (routa/märkä)",
+    sea_winter:"Talvi",
+    value_title:"Mitä tulos auttaa tekemään",
+    value_desc:"Tämä ei ole kilogrammalaskuri. KUORMA+ auttaa tunnistamaan, milloin tehtävä, maasto, vuodenaika ja huollon epävarmuus nostavat kuormituspaineen tasolle, joka alkaa syödä liikettä ja kestävyyttä.",
+    value_b1:"karsi, jaa yhteiskalusto, muokkaa tempoa tai huoltosuunnitelmaa.",
+    value_b2:"tasaa ryhmän sisäinen kuormahajonta ja poista “mukavuuskuorma”.",
+    value_b3:"kirjaa miksi tempo romahti ja mitä päätöksiä muutetaan ensi kerralla.",
+    value_h1:"Ennen tehtävää:",
+    value_h2:"Lähtötarkastus:",
+    value_h3:"Jälkiarvio:",
+    v5_title:"Kuormabudjetti ja moduulit (V5)",
+    v5_desc:"Tämä osio muuttaa indeksin toimintaohjeeksi: arvioi realistinen kokonaiskuormabudjetti ja rakenna kuorma moduuleista. Tavoite ei ole täydellinen totuus, vaan parempi päätös.",
+    v5_bw_lbl:"Sotilaan paino (kg)",
+    v5_note:"Huom:",
+    v5_bw_tip:"Budjetti lasketaan prosenttina kehonpainosta ja säädetään olosuhteilla.",
+    v5_budget_lbl:"Suositeltu kokonaiskuormabudjetti",
+    v5_budget_base:"Perus",
+    v5_budget_adj:"Säädetty",
+    v5_budget_zone:"Vyöhyke",
+    v5_est_lbl:"Arvioitu kuorma moduuleista",
+    v5_est_min:"Min",
+    v5_est_target:"Valittu",
+    v5_est_max:"Max",
+    v5_modules_title:"Moduulit",
+    v5_modules_desc:"Valitse moduulit ja arvioi taso. Työkalu ehdottaa automaattisesti pakollisia (tehtävä ja olosuhteet), mutta johtaja päättää.",
+    v5_actions_title:"Kevennä ensin tästä",
+    mod_level:"Taso",
+    mod_include:"Mukana",
+    mod_required:"Pakollinen",
+    mod_optional:"Valinnainen",
+    level_low:"Minimi",
+    level_med:"Normaali",
+    level_high:"Korotettu",
+    budget_zone_green:"Hallittava",
+    budget_zone_yellow:"Kireä",
+    budget_zone_red:"Ylikuorma",
+    scale_title:"Riskiskaala",
+    scale_desc:"Pisteet ovat päätöstuen indeksi. Ne eivät ole kilogrammoja, vaan kuvaavat kuormituspaineen kasaantumista. Skaala auttaa tulkitsemaan, milloin kuorma alkaa syödä liikettä, tempoa ja palautumista.",
+    scale_zone_light:"Kevyt",
+    scale_zone_norm:"Normaali",
+    scale_zone_elev:"Kohonnut",
+    scale_zone_high:"Korkea riski",
+    scale_score_lbl:"Nykyinen",
+    scale_band_lbl:"Vyöhyke",
+    scale_hint_lbl:"Vihje",
+    scale_takeaway_title:"Mitä tästä seuraa",
+    scale_takeaway:"Kun pisteet siirtyvät kohonneelle tai korkean riskin alueelle, ratkaisu ei yleensä ole uusi reppu. Ratkaisu on tehtävän rajaus, työjako, huoltosuunnitelma ja turhan varautumisen karsinta.",
+    band_light:"Kevyt",
+    band_norm:"Normaali",
+    band_elev:"Kohonnut",
+    band_high:"Korkea riski",
+    hint_light:"Hyvä lähtötaso. Pidä kuormahajonta kurissa.",
+    hint_norm:"Tavanomainen. Seuraa tempoa ja palautumista, poista päällekkäisyydet.",
+    hint_elev:"Kevennä tai jaa yhteiskalustoa. Tarkista huollon realistisuus ja tehtävän rajaus.",
+    hint_high:"Korkea riski. Muuta suunnitelmaa, työjakoa tai huoltoa. Karsi mukavuuskuorma ensin.",
+    scale_zone_light_short:"KEVYT",
+    scale_zone_norm_short:"NOR",
+    scale_zone_elev_short:"KOH",
+    scale_zone_high_short:"RISKI",
+    btn_advanced:"Lisätoiminnot",
+    advanced_hint:"Näytä Ennen–Jälkeen-tila (valinnainen)",
+    unified_label:"Tulos",
+    unified_band_label:"Luokka",
+    unified_explain:"Tämä ei ole kilogrammalaskuri. Pisteet kuvaavat kuormituspaineen kertymistä ja auttavat päättämään, milloin kuorma alkaa syödä liikettä, tempoa ja palautumista.",
+
+
+
+
+
+
+
+
+
+
+  },
+  en: {
+    title:"KUORMA+",
+    subtitle:"Public analysis tool for assessing soldier load pressure. Not a kilogram calculator, but a decision-support framework.",
+    scale_points_label:"Points",
+    scale_current_label:"Current",
+    mode_single:"Single",
+    mode_compare:"Before–after",
+    how_title:"What this does",
+    how_body:"Fill mission context and rate the factors. KUORMA+ produces a load index and a recommended action. In before–after mode, test one change at a time and see whether the situation improves.",
+    ctx_title:"Mission context",
+    ctx_branch:"Branch / unit type",
+    ctx_task:"Mission type",
+    ctx_terrain:"Terrain",
+    ctx_season:"Season",
+    inputs_title:"Factors to rate",
+    inputs_kpi:"Fill the selections. The index updates automatically.",
+    result_title:"Result",
+    tools_title:"Tools",
+    tools_kpi:"Copy report or print to PDF.",
+    btn_copy:"Copy report",
+    btn_pdf:"Print / PDF",
+    btn_reset:"Reset",
+    btn_tips:"Toggle help text",
+    fill_req:"Fill required fields.",
+    delta_title:"Change",
+    before:"Before",
+    after:"After",
+    opt_choose:"Choose…",
+    br_infantry:"Infantry", br_jaeger:"Jaeger unit", br_recon:"Recon", br_engineer:"Engineers",
+    br_artillery:"Artillery", br_mortar:"Mortars", br_airdef:"Air defence", br_at:"Anti-tank",
+    br_cis:"C2 / signals", br_fso:"Fire support", br_log:"Logistics", br_med:"Medical", br_other:"Other",
+    task_def:"Defence", task_delay:"Delay", task_attack:"Attack", task_breach:"Breach / clearance", task_recon:"Reconnaissance",
+    task_security:"Security / guard", task_islands:"Island occupation / archipelago ops", task_other:"Other",
+    ter_open:"Open terrain", ter_forest:"Forest", ter_urban:"Built-up area", ter_archipelago:"Archipelago / coastal",
+    ter_hard:"Difficult terrain (swamp, rocks)", ter_mixed:"Mixed terrain",
+    sea_summer:"Summer", sea_spring:"Spring (slush)", sea_autumn:"Autumn (wet)", sea_winter:"Winter",
+    L_lbl:"Movement demand (L)", H_lbl:"Resupply certainty (H)", K_lbl:"Contact risk (K)",
+    spread_lbl:"Load dispersion (D)", weak_lbl:"Weakest link (W)", shared_lbl:"Redistribution done? (−1)",
+    notes_lbl:"Notes",
+    L_1:"Static / short moves", L_3:"Mixed movement", L_5:"Long move / high tempo",
+    H_1:"Resupply reliable <24h", H_3:"Uncertain 24–72h", H_5:"No reliable resupply >72h",
+    K_1:"Low", K_3:"Medium", K_5:"High",
+    spread_0:"Controlled (<5 kg)", spread_1:"Significant (5–10 kg)", spread_2:"Large (>10 kg)",
+    weak_0:"None identified", weak_1:"One constraint", weak_2:"Multiple constraints",
+    shared_0:"Not checked", shared_1:"Yes",
+L_3:"Mixed movement",
+    L_5:"Long displacement / high tempo",
+    H_lbl:"Resupply reliability (H)",
+    H_3:"Uncertain 24–72h",
+    H_5:"No reliable resupply >72h",
+    K_lbl:"Contact risk (K)",
+    K_3:"Medium",
+    K_5:"High",
+    spread_1:"Significant (5–10 kg)",
+    spread_2:"Large (>10 kg)",
+    weak_lbl:"Weakest link",
+    weak_1:"One constraint",
+    weak_2:"Multiple constraints",
+    shared_lbl:"Common kit redistributed",
+    shared_1:"Yes",
+    task_attack:"Attack",
+    task_breach:"Breach / clearance",
+    task_delay:"Delay",
+    task_islands:"Island / coastal ops",
+    task_other:"Other",
+    task_recon:"Recon",
+    ter_archipelago:"Archipelago",
+    ter_forest:"Forest",
+    ter_mixed:"Mixed terrain",
+    ter_urban:"Urban / built-up",
+    br_airdef:"Air defence",
+    br_at:"Anti-tank",
+    br_engineer:"Engineer",
+    br_fso:"Fire support",
+    br_jaeger:"Jaeger (light infantry)",
+    br_log:"Logistics",
+    br_med:"Medical",
+    br_mortar:"Mortars",
+    br_other:"Other",
+    br_recon:"Recon",
+    sea_autumn:"Autumn (wet)",
+    sea_spring:"Spring (thaw/wet)",
+    sea_winter:"Winter",
+    value_title:"How to use the result",
+    value_desc:"This is not a kilogram calculator. KUORMA+ helps you spot when mission type, terrain, season and resupply uncertainty push load pressure to a level that starts to degrade movement and endurance.",
+    value_b1:"cut items, redistribute common kit, adjust tempo or the resupply plan.",
+    value_b2:"reduce intra-team load dispersion and remove “comfort weight”.",
+    value_b3:"capture why tempo collapsed and what decisions change next time.",
+    value_h1:"Before a mission:",
+    value_h2:"Pre-move check:",
+    value_h3:"After-action:",
+    v5_title:"Load budget & modules (V5)",
+    v5_desc:"This section turns the index into action: estimate a realistic total load budget and build the load from modules. The goal is not perfect truth, but better decisions.",
+    v5_bw_lbl:"Bodyweight (kg)",
+    v5_note:"Note:",
+    v5_bw_tip:"Budget is calculated as a % of bodyweight and adjusted by conditions.",
+    v5_budget_lbl:"Recommended total load budget",
+    v5_budget_base:"Base",
+    v5_budget_adj:"Adjusted",
+    v5_budget_zone:"Zone",
+    v5_est_lbl:"Estimated load from modules",
+    v5_est_min:"Min",
+    v5_est_target:"Selected",
+    v5_est_max:"Max",
+    v5_modules_title:"Modules",
+    v5_modules_desc:"Select modules and level. The tool suggests required modules (mission & conditions), but the leader decides.",
+    v5_actions_title:"Reduce first:",
+    mod_level:"Level",
+    mod_include:"Include",
+    mod_required:"Required",
+    mod_optional:"Optional",
+    level_low:"Minimum",
+    level_med:"Normal",
+    level_high:"Increased",
+    budget_zone_green:"Manageable",
+    budget_zone_yellow:"Tight",
+    budget_zone_red:"Overload",
+    scale_title:"Risk scale",
+    scale_desc:"Points are a decision-support index. Not kilograms, but accumulated load pressure. The scale helps interpret when load starts to eat movement, tempo and recovery.",
+    scale_zone_light:"Light",
+    scale_zone_norm:"Normal",
+    scale_zone_elev:"Elevated",
+    scale_zone_high:"High risk",
+    scale_score_lbl:"Current",
+    scale_band_lbl:"Band",
+    scale_hint_lbl:"Hint",
+    scale_takeaway_title:"So what",
+    scale_takeaway:"When points move into elevated or high-risk, the fix is rarely a new pack. The fix is mission scoping, task sharing, resupply planning, and cutting unnecessary buffers.",
+    band_light:"Light",
+    band_norm:"Normal",
+    band_elev:"Elevated",
+    band_high:"High risk",
+    hint_light:"Good baseline. Keep load dispersion under control.",
+    hint_norm:"Typical. Monitor tempo and recovery, remove duplicates.",
+    hint_elev:"Cut or redistribute shared kit. Verify resupply realism and mission scope.",
+    hint_high:"High risk. Change the plan, task split or resupply. Cut comfort weight first.",
+    scale_zone_light_short:"LIGHT",
+    scale_zone_norm_short:"NORM",
+    scale_zone_elev_short:"ELEV",
+    scale_zone_high_short:"RISK",
+    btn_advanced:"Advanced",
+    advanced_hint:"Show Before–After mode (optional)",
+    unified_label:"Result",
+    unified_band_label:"Band",
+    unified_explain:"Not a kilogram calculator. Points reflect accumulated load pressure and help you decide when load starts to degrade movement, tempo and recovery.",
+
+
+
+
+
+
+
+
+
+
+  }
+};
+let lang="fi";
+
+let tipsOn=true;
+
+/* Inline help content shown under fields (mobile friendly) */
+const HELP = {
+  fi:{
+    tip_branch:"Konteksti raporttiin. Tämä ei muuta pistelaskua, mutta parantaa tulkintaa (joukkotyyppi ja rooli).",
+    tip_task:"Tehtävä vaikuttaa siihen, kuinka paljon omavaraisuutta ja varautumista käytännössä tarvitaan. Hyökkäys ja tiedustelu nostavat painetta eri tavoin.",
+    tip_terrain:"Maasto pisteytetään fyysisen ja taktisen kitkan mukaan. Vaikeakulkuinen maasto ja esteet nostavat kuormituspaineen vaikutusta liikkeeseen.",
+    tip_season:"Vuodenaika vaikuttaa energiankulutukseen, lämpötalouteen, liikkumiseen ja varustetarpeeseen. Talvi nostaa kuormituspaineen vaikutuksia eniten.",
+    tip_L:"Liikevaatimus kuvaa tempoa ja siirtymän pituutta. Ylilastaus näkyy ensin liikkeessä: marssinopeus, tauot ja palautuminen heikkenevät.",
+    tip_H:"Huollon epävarmuus siirtää omavaraisuuden sotilaalle. Kun täydennys ei ole varma, varautuminen kasvaa ja kuormituspaine nousee.",
+    tip_K:"Kontaktiriski lisää suoja-, ampumatarvike- ja lääkintävarautumista. Mitä korkeampi riski, sitä vähemmän on tilaa \"mukavuuskuormalle\".",
+    tip_spread:"Kuorman hajonta on joukkotason riski: jos ryhmässä on yli 10 kg eroja, tempo hajoaa. Tasaa kuormaa ennen lähtöä.",
+    tip_weak:"Heikoin lenkki rajoittaa koko joukon tempoa. Yksi rajoite voi olla fyysinen kunto, vamma, kengitys, kylmä tai varusteen sovitus.",
+    tip_shared:"Kalustonjako on yksinkertainen tapa laskea painetta. Kun raskas yhteiskalusto jaetaan tietoisesti, hajonta pienenee ja tempo paranee.",
+    tip_notes:"Kirjaa yksi päätös tai havainto. Pidä teksti yleisellä tasolla (ei nimiä, ei tarkkoja sijainteja, ei aikatauluja)."
+  },
+  en:{
+    tip_branch:"Context for the report. This does not change the score, but improves interpretation (unit type / role).",
+    tip_task:"Mission type shapes self-sufficiency and what must be carried. Attack and recon increase pressure in different ways.",
+    tip_terrain:"Terrain is scored by physical and tactical friction. Difficult terrain and obstacles amplify the impact of load on movement.",
+    tip_season:"Season affects energy use, thermal balance, mobility and kit requirements. Winter usually amplifies load pressure the most.",
+    tip_L:"Movement demand reflects tempo and displacement. Overload shows up first in movement: pace, breaks and recovery degrade.",
+    tip_H:"Resupply uncertainty pushes self-sufficiency onto the soldier. When resupply is not reliable, carried buffers grow and pressure rises.",
+    tip_K:"Contact risk increases protection/ammo/medical requirements. The higher the risk, the less room for comfort items.",
+    tip_spread:"Load dispersion is a team risk: >10 kg differences break tempo. Balance loads before moving.",
+    tip_weak:"The weakest link limits the whole team's pace. Constraints can be fitness, injury, footwear, cold exposure or poor kit fit.",
+    tip_shared:"Redistribution is a simple pressure reducer. Deliberate sharing of heavy common kit reduces dispersion and improves tempo.",
+    tip_notes:"Write one decision or observation. Keep it general (no names, no precise locations, no timelines)."
+  }
+};
+
+function ensureHelpboxForTip(tipEl){
+  const id = tipEl.id || tipEl.getAttribute("data-tip");
+  if(!id) return null;
+  const host = tipEl.closest("div"); // field container
+  if(!host) return null;
+  let hb = host.querySelector(`.helpbox[data-for="${id}"]`);
+  if(!hb){
+    hb = document.createElement("div");
+    hb.className = "helpbox hidden";
+    hb.setAttribute("data-for", id);
+    host.appendChild(hb);
+  }
+  return hb;
+}
+
+function setHelpboxText(hb, tipId){
+  const msg = (HELP[lang] && HELP[lang][tipId]) || (HELP.fi[tipId] || "");
+  hb.innerHTML = msg ? `<strong>${lang==="fi"?"Selite":"Info"}:</strong> ${msg}` : "";
+}
+
+function closeAllHelpboxes(){
+  document.querySelectorAll(".helpbox").forEach(hb=>hb.classList.add("hidden"));
+}
+
+function bindTips(){
+  document.querySelectorAll(".tip").forEach(tipEl=>{
+    if(tipEl.getAttribute("data-bound")==="1") return;
+    tipEl.setAttribute("data-bound","1");
+    tipEl.setAttribute("role","button");
+    tipEl.setAttribute("tabindex","0");
+    tipEl.addEventListener("click", ()=>{
+      if(!tipsOn) return;
+      const tipId = tipEl.id;
+      const hb = ensureHelpboxForTip(tipEl);
+      if(!hb) return;
+      const willOpen = hb.classList.contains("hidden");
+      closeAllHelpboxes();
+      if(willOpen){
+        setHelpboxText(hb, tipId);
+        hb.classList.remove("hidden");
+        hb.scrollIntoView({block:"nearest", behavior:"smooth"});
+      }
+    });
+    tipEl.addEventListener("keydown",(e)=>{
+      if(e.key==="Enter"||e.key===" "){
+        e.preventDefault();
+        tipEl.click();
+      }
+    });
+  });
+}
+
+let mode="single";
+
+function t(key){return (I18N[lang] && I18N[lang][key]) ? I18N[lang][key] : (I18N.fi[key] || key);}
+
+function applyLang(){
+  document.documentElement.lang = (lang==="fi"?"fi":"en");
+  document.querySelectorAll("[data-i18n]").forEach(el=>{
+    const key=el.getAttribute("data-i18n");
+    el.textContent = t(key);
+  });
+
+  // tooltips
+  const tips={
+    tip_branch:{fi:"Konteksti raporttiin. Ei muuta pistettä.",en:"Report context. Does not change score."},
+    tip_task:{fi:"Tehtäväprofiili vaikuttaa omavaraisuuteen ja tempoon.",en:"Mission profile affects self-sufficiency and tempo."},
+    tip_terrain:{fi:"Maasto pisteytetään fyysisen ja taktisen kitkan mukaan.",en:"Terrain is scored by physical and tactical friction."},
+    tip_season:{fi:"Olosuhteet vaikuttavat rasitukseen ja energiantarpeeseen.",en:"Conditions affect fatigue and energy demand."},
+    tip_L:{fi:"Tempo ja siirtymävaatimus. Ylilastaus näkyy liikkeessä.",en:"Tempo/displacement requirement. Overload hits movement."},
+    tip_H:{fi:"Huollon epävarmuus siirtää omavaraisuutta sotilaalle.",en:"Resupply uncertainty pushes self-sufficiency to the soldier."},
+    tip_K:{fi:"Kontaktiriski lisää suoja- ja ampumatarvepainetta.",en:"Contact risk increases protection/ammo pressure."},
+    tip_spread:{fi:"Hajonta on tempon riski. Tasaa kuormaa ennen lähtöä.",en:"Dispersion threatens tempo. Balance loads before departure."},
+    tip_weak:{fi:"Heikoin lenkki rajoittaa tempoa.",en:"Weakest link limits tempo."},
+    tip_shared:{fi:"Kalustonjako vähentää kuormituspaineen riskiä.",en:"Redistribution reduces load-pressure risk."},
+    tip_notes:{fi:"Kirjaa yksi päätös tai huomio. Pidä yleisellä tasolla.",en:"Write one decision or note. Keep it general."}
+  };
+  for(const [id,msg] of Object.entries(tips)){
+    const el=document.getElementById(id);
+    if(el) el.title = (lang==="fi"?msg.fi:msg.en);
+  }
+
+  const ph = (lang==="fi"
+    ?"Esim: karsittu ei-kriittinen, kalusto jaettu uudelleen, sovittu vesitäydennys pienissä erissä."
+    :"E.g.: cut non-critical, redistributed shared kit, planned small-batch water resupply.");
+  ["notes","N_b","N_a"].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) el.placeholder = ph;
+  });
+
+  document.getElementById("licenseText").innerHTML = (lang==="fi"
+    ?"Tämä työkalu on tarkoitettu koulutus- ja analyysikäyttöön.<br>Saat käyttää, jakaa ja soveltaa KUORMA+:aa ei-kaupallisesti, kun tekijä mainitaan.<br><br><b>Kielletty:</b> työkalun tai sen sisällön myynti, edelleenlisensointi tai esittäminen omana tuotteena.<br><br>KUORMA+ ei ole Puolustusvoimien virallinen järjestelmä eikä korvaa johtajan harkintaa."
+    :"This tool is intended for training and analysis use.<br>You may use, share and adapt KUORMA+ for non-commercial purposes with attribution.<br><br><b>Not allowed:</b> selling, re-licensing, or presenting this tool/content as your own product.<br><br>KUORMA+ is not an official Finnish Defence Forces system and does not replace commander judgement.");
+
+  document.getElementById("fiBtn").classList.toggle("active",lang==="fi");
+  document.getElementById("enBtn").classList.toggle("active",lang==="en");
+
+  bindTips();
+  setTipsVisibility(tipsOn);
+  
+
+  // Force-update help button labels on language switch (mobile-friendly)
+  document.querySelectorAll(".tip").forEach(el=>{
+    el.textContent = (lang === "fi") ? "Selite" : "Info";
+    el.setAttribute("aria-label", (lang==="fi") ? "Avaa selite" : "Open info");
+  });
+
+
+// Build JA2-style risk ladder segments (0..20)
+(function initLadder(){
+  const ladder = document.getElementById("unifiedLadder");
+  if(!ladder) return;
+  if(ladder.children && ladder.children.length) return;
+  for(let i=0;i<20;i++){
+    const d=document.createElement("div");
+    d.className="ladSeg";
+    ladder.appendChild(d);
+  }
+})();
+
+updateAll();
+
+  // V5 refresh on language switch
+  try{ if(typeof renderModules==='function') renderModules(); }catch(e){}
+  try{ if(typeof updateV5==='function') updateV5(); }catch(e){}
+}
+
+function setTipsVisibility(on){
+  tipsOn=on;
+  document.querySelectorAll(".tip").forEach(el=>{ el.style.display = on ? "inline-flex" : "none"; });
+  if(!on){ closeAllHelpboxes(); }
+}
+
+function ctxReady(){
+  return document.getElementById("aselaji").value &&
+         document.getElementById("tehtava").value &&
+         document.getElementById("maasto").value &&
+         document.getElementById("vuodenaika").value;
+}
+
+function deriveM(){
+  const m=document.getElementById("maasto").value;
+  const map = {
+    [t("ter_open")]:1,
+    [t("ter_forest")]:3,
+    [t("ter_urban")]:4,
+    [t("ter_archipelago")]:4,
+    [t("ter_hard")]:5,
+    [t("ter_mixed")]:3,
+  };
+  return map[m] ?? 3;
+}
+function deriveS(){
+  const s=document.getElementById("vuodenaika").value;
+  const map = {
+    [t("sea_summer")]:1,
+    [t("sea_spring")]:3,
+    [t("sea_autumn")]:3,
+    [t("sea_winter")]:5,
+  };
+  return map[s] ?? 0;
+}
+function deriveT(){
+  const tt=document.getElementById("tehtava").value;
+  const map = {
+    [t("task_def")]:0,
+    [t("task_delay")]:1,
+    [t("task_security")]:1,
+    [t("task_attack")]:2,
+    [t("task_breach")]:2,
+    [t("task_recon")]:3,
+    [t("task_islands")]:3,
+  };
+  return map[tt] ?? 2;
+}
+
+function classify(total){
+  // Band thresholds align with the visual scale:
+  // 0-9 LIGHT, 10-14 NORMAL, 15-19 ELEVATED, 20+ HIGH RISK
+  if(total<=BAND.light){
+    return {cls:"ok", fi:"Kevyt kuormitus", en:"Light load"};
+  }
+  if(total<=BAND.normal){
+    return {cls:"mid", fi:"Normaali kuormitus", en:"Normal load"};
+  }
+  if(total<=BAND.elevated){
+    return {cls:"high", fi:"Kohonnut kuormitus", en:"Elevated load"};
+  }
+  return {cls:"crit", fi:"Korkea riski", en:"High risk"};
+}
+
+function advice(total, D, W, sharedYes){
+  const fi=[], en=[];
+  if(total>18){
+    fi.push("Tee yksi selkeä kevennyspäätös ennen siirtymää. Karsi ei-kriittinen ja tarkista kalustonjako.");
+    en.push("Make one clear lightening decision before movement. Cut non-critical items and check redistribution.");
+  }
+  if(D>=1){
+    fi.push("Kuorman hajonta uhkaa tempoa. Tasaa kuormaa tai vaihda työjakoa.");
+    en.push("Load dispersion threatens tempo. Balance loads or adjust task allocation.");
+  }
+  if(W>=1){
+    fi.push("Heikoin lenkki määrittää tempon. Vähennä kuormaa tai tue roolijaoilla.");
+    en.push("Weakest link sets the pace. Reduce load or support via role allocation.");
+  }
+  if(sharedYes===0){
+    fi.push("Tee taisteluvalmiustarkastus ja yhteisen kaluston uudelleenjako ennen lähtöä.");
+    en.push("Conduct a readiness check and redistribute shared kit before departure.");
+  }
+  if(fi.length===0){
+    fi.push("Pidä nykyinen kuormaprofiili, mutta seuraa väsymystä ja ylläpidä huoltorutiinit.");
+    en.push("Maintain current profile, monitor fatigue, and keep resupply routines.");
+  }
+  return {fi:fi.join(" "), en:en.join(" ")};
+}
+
+function updateDerivedCtx(){
+  const asel=document.getElementById("aselaji").value || "–";
+  const teht=document.getElementById("tehtava").value || "–";
+  const maa=document.getElementById("maasto").value || "–";
+  const vuod=document.getElementById("vuodenaika").value || "–";
+  document.getElementById("derivedCtx").textContent = `${asel} | ${teht} | ${maa} | ${vuod}`;
+}
+
+function computeSingle(){
+  const L = parseInt(document.getElementById("L").value||0,10);
+  const H = parseInt(document.getElementById("H").value||0,10);
+  const K = parseInt(document.getElementById("K").value||0,10);
+  const D = parseInt(document.getElementById("spread").value||0,10);
+  const W = parseInt(document.getElementById("weak").value||0,10);
+  const sharedYes = parseInt(document.getElementById("shared").value||0,10); // 1 => yes
+  const S = sharedYes===1 ? -1 : 0;
+  const M = deriveM();
+  const Szn = deriveS();
+  const Tt = deriveT();
+  const total = L + H + K + M + Szn + Tt + D + W + S;
+  return {L,H,K,M,Szn,Tt,D,W,S,total,sharedYes};
+}
+
+function renderSingle(){
+  updateDerivedCtx();
+  const out = document.getElementById("out");
+  const details = document.getElementById("details");
+  const adviceEl = document.getElementById("advice");
+  const formula = document.getElementById("formula");
+
+  if(!ctxReady()){
+    out.className="status ok";
+    out.textContent = t("fill_req");
+    details.textContent = "–";
+    adviceEl.textContent = "–";
+    formula.textContent = "–";
+    return;
+  }
+  const c = computeSingle();
+  formula.textContent = `L${c.L}+H${c.H}+K${c.K}+M${c.M}+S${c.Szn}+T${c.Tt}+D${c.D}+W${c.W}${c.S===-1?"-1":""} = ${c.total}`;
+  const cls = classify(c.total);
+  out.className = "status " + cls.cls;
+  out.textContent = (lang==="fi"?cls.fi:cls.en) + ` (${c.total})`;
+  try{updateScale(c.total);}catch(e){}
+
+  const detFi = `Maasto (M)=${c.M}, vuodenaika (S)=${c.Szn}, tehtäväprofiili (T)=${c.Tt}.`;
+  const detEn = `Terrain (M)=${c.M}, season (S)=${c.Szn}, mission profile (T)=${c.Tt}.`;
+  details.textContent = (lang==="fi"?detFi:detEn);
+
+  const adv = advice(c.total, c.D, c.W, c.sharedYes);
+  adviceEl.textContent = (lang==="fi"?adv.fi:adv.en);
+}
+
+function buildCompareSelects(){
+  // Build selects by cloning option sets from single selects
+  const ids = [
+    {k:"L", src:"L", b:"L_b", a:"L_a"},
+    {k:"H", src:"H", b:"H_b", a:"H_a"},
+    {k:"K", src:"K", b:"K_b", a:"K_a"},
+    {k:"D", src:"spread", b:"D_b", a:"D_a"},
+    {k:"W", src:"weak", b:"W_b", a:"W_a"},
+    {k:"S", src:"shared", b:"S_b", a:"S_a"},
+  ];
+  const beforeWrap = document.getElementById("beforeSelects");
+  const afterWrap = document.getElementById("afterSelects");
+  beforeWrap.innerHTML = "";
+  afterWrap.innerHTML = "";
+  for(const it of ids){
+    const srcSel = document.getElementById(it.src);
+    const bSel = srcSel.cloneNode(true);
+    bSel.id = it.b;
+    const aSel = srcSel.cloneNode(true);
+    aSel.id = it.a;
+
+    const bDiv = document.createElement("div");
+    const aDiv = document.createElement("div");
+    const bLab = document.createElement("label");
+    const aLab = document.createElement("label");
+    bLab.setAttribute("data-i18n", it.k+"_lbl");
+    aLab.setAttribute("data-i18n", it.k+"_lbl");
+    bLab.textContent = t(it.k+"_lbl");
+    aLab.textContent = t(it.k+"_lbl");
+    bDiv.appendChild(bLab); bDiv.appendChild(bSel);
+    aDiv.appendChild(aLab); aDiv.appendChild(aSel);
+    beforeWrap.appendChild(bDiv);
+    afterWrap.appendChild(aDiv);
+
+    bSel.addEventListener("change", updateAll);
+    aSel.addEventListener("change", updateAll);
+  }
+}
+
+function computeFrom(prefix){
+  const get = (id)=>parseInt(document.getElementById(id).value||0,10);
+  const L=get(prefix==="b"?"L_b":"L_a");
+  const H=get(prefix==="b"?"H_b":"H_a");
+  const K=get(prefix==="b"?"K_b":"K_a");
+  const D=get(prefix==="b"?"D_b":"D_a");
+  const W=get(prefix==="b"?"W_b":"W_a");
+  const sharedYes=get(prefix==="b"?"S_b":"S_a");
+  const S = sharedYes===1 ? -1 : 0;
+  const M=deriveM(), Szn=deriveS(), Tt=deriveT();
+  const total = L+H+K+M+Szn+Tt+D+W+S;
+  return {L,H,K,D,W,sharedYes,S,M,Szn,Tt,total};
+}
+
+function renderCompare(){
+  updateDerivedCtx();
+  const outB=document.getElementById("outB"), outA=document.getElementById("outA");
+  const detailsB=document.getElementById("detailsB"), detailsA=document.getElementById("detailsA");
+  const adviceB=document.getElementById("adviceB"), adviceA=document.getElementById("adviceA");
+  const deltaLine=document.getElementById("deltaLine"), deltaHint=document.getElementById("deltaHint");
+  const formula=document.getElementById("formula");
+
+  if(!ctxReady()){
+    formula.textContent="–";
+    deltaLine.textContent="–";
+    deltaHint.textContent = "–";
+    outB.className="status ok"; outA.className="status ok";
+    outB.textContent=t("fill_req"); outA.textContent=t("fill_req");
+    detailsB.textContent="–"; detailsA.textContent="–";
+    adviceB.textContent="–"; adviceA.textContent="–";
+    return;
+  }
+
+  const b=computeFrom("b");
+  const a=computeFrom("a");
+  const delta = a.total - b.total;
+  formula.textContent = `Δ = ${delta} (B ${b.total} → A ${a.total})`;
+
+  const cb=classify(b.total), ca=classify(a.total);
+  outB.className="status "+cb.cls; outA.className="status "+ca.cls;
+  outB.textContent=(lang==="fi"?cb.fi:cb.en)+` (${b.total})`;
+  outA.textContent=(lang==="fi"?ca.fi:ca.en)+` (${a.total})`;
+
+  const detFi = `Maasto (M)=${b.M}, vuodenaika (S)=${b.Szn}, tehtäväprofiili (T)=${b.Tt}.`;
+  const detEn = `Terrain (M)=${b.M}, season (S)=${b.Szn}, mission profile (T)=${b.Tt}.`;
+  detailsB.textContent = (lang==="fi"?detFi:detEn);
+  detailsA.textContent = (lang==="fi"?detFi:detEn);
+
+  adviceB.textContent = (lang==="fi"?advice(b.total,b.D,b.W,b.sharedYes).fi:advice(b.total,b.D,b.W,b.sharedYes).en);
+  adviceA.textContent = (lang==="fi"?advice(a.total,a.D,a.W,a.sharedYes).fi:advice(a.total,a.D,a.W,a.sharedYes).en);
+
+  if(lang==="fi"){
+    deltaLine.textContent = `Muutos: ${delta} (ennen ${b.total}, jälkeen ${a.total})`;
+    deltaHint.textContent = (delta<0) ? "Parannus: kuormitusindeksi pieneni." : (delta>0 ? "Heikennys: kuormitusindeksi kasvoi." : "Ei muutosta.");
+  } else {
+    deltaLine.textContent = `Change: ${delta} (before ${b.total}, after ${a.total})`;
+    deltaHint.textContent = (delta<0) ? "Improvement: load index decreased." : (delta>0 ? "Worse: load index increased." : "No change.");
+  }
+}
+
+function updateAll(){
+  if(mode==="single"){
+    renderSingle();
+  } else {
+    renderCompare();
+  }
+
+  try {
+    if (typeof window.__kuormaUnifiedRender === 'function') {
+      window.__kuormaUnifiedRender(total);
+    }
+  } catch(e) {}
+}
+
+function setMode(m){
+  mode=m;
+  document.getElementById("modeSingle").classList.toggle("active", m==="single");
+  document.getElementById("modeCompare").classList.toggle("active", m==="compare");
+  document.getElementById("singleWrap").style.display = (m==="single"?"block":"none");
+  document.getElementById("singleResult").style.display = (m==="single"?"block":"none");
+  document.getElementById("compareWrap").style.display = (m==="compare"?"block":"none");
+  document.getElementById("compareResult").style.display = (m==="compare"?"block":"none");
+  updateAll();
+}
+
+function resetAll(){
+  ["aselaji","tehtava","maasto","vuodenaika","L","H","K","spread","weak","shared"].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) el.value = (id in {"spread":1,"weak":1,"shared":1}) ? (id==="spread"?"":(id==="weak"?"0":"0")) : "";
+  });
+  document.getElementById("notes").value="";
+  const nb=document.getElementById("N_b"); if(nb) nb.value="";
+  const na=document.getElementById("N_a"); if(na) na.value="";
+  // reset compare selects if present
+  ["L_b","H_b","K_b","D_b","W_b","S_b","L_a","H_a","K_a","D_a","W_a","S_a"].forEach(id=>{
+    const el=document.getElementById(id); if(el) el.value="";
+  });
+  updateAll();
+}
+
+function copyReport(){
+  let text="";
+  const ctx = `${document.getElementById("aselaji").value} | ${document.getElementById("tehtava").value} | ${document.getElementById("maasto").value} | ${document.getElementById("vuodenaika").value}`;
+  if(mode==="single"){
+    const c=computeSingle();
+    const cls=classify(c.total);
+    text += `KUORMA+\n`;
+    text += `${lang==="fi"?"Konteksti":"Context"}: ${ctx}\n`;
+    text += `${lang==="fi"?"Tulos":"Result"}: ${lang==="fi"?cls.fi:cls.en} (${c.total})\n`;
+    text += `Kaava: L${c.L}+H${c.H}+K${c.K}+M${c.M}+S${c.Szn}+T${c.Tt}+D${c.D}+W${c.W}${c.S===-1?"-1":""} = ${c.total}\n`;
+    const adv=advice(c.total,c.D,c.W,c.sharedYes);
+    text += `${lang==="fi"?"Suositus":"Recommendation"}: ${lang==="fi"?adv.fi:adv.en}\n`;
+    const notes=document.getElementById("notes").value.trim();
+    if(notes) text += `${lang==="fi"?"Muistiinpanot":"Notes"}: ${notes}\n`;
+  } else {
+    const b=computeFrom("b"), a=computeFrom("a");
+    const cb=classify(b.total), ca=classify(a.total);
+    const delta=a.total-b.total;
+    text += `KUORMA+\n`;
+    text += `${lang==="fi"?"Konteksti":"Context"}: ${ctx}\n`;
+    text += `${lang==="fi"?"Ennen":"Before"}: ${lang==="fi"?cb.fi:cb.en} (${b.total})\n`;
+    text += `${lang==="fi"?"Jälkeen":"After"}: ${lang==="fi"?ca.fi:ca.en} (${a.total})\n`;
+    text += `Δ = ${delta}\n`;
+    const nb=document.getElementById("N_b").value.trim();
+    const na=document.getElementById("N_a").value.trim();
+    if(nb) text += `${lang==="fi"?"Muistiinpanot (ennen)":"Notes (before)"}: ${nb}\n`;
+    if(na) text += `${lang==="fi"?"Muistiinpanot (jälkeen)":"Notes (after)"}: ${na}\n`;
+  }
+  navigator.clipboard.writeText(text).then(()=>{
+    const btn=document.getElementById("copy");
+    const old=btn.textContent;
+    btn.textContent = (lang==="fi"?"Kopioitu":"Copied");
+    setTimeout(()=>btn.textContent=old,900);
+  });
+}
+
+function printPDF(){ window.print(); }
+
+// Wire events
+document.getElementById("fiBtn").addEventListener("click", ()=>{lang="fi"; applyLang();
+try{bindV5();renderModules();updateV5();}catch(e){}});
+document.getElementById("enBtn").addEventListener("click", ()=>{lang="en"; applyLang();});
+document.getElementById("modeSingle").addEventListener("click", ()=>setMode("single"));
+document.getElementById("modeCompare").addEventListener("click", ()=>setMode("compare"));
+document.getElementById("toggleTips").addEventListener("click", ()=>{setTipsVisibility(!tipsOn);});
+document.getElementById("copy").addEventListener("click", copyReport);
+document.getElementById("print").addEventListener("click", printPDF);
+document.getElementById("reset").addEventListener("click", resetAll);
+
+["aselaji","tehtava","maasto","vuodenaika","L","H","K","spread","weak","shared","notes"].forEach(id=>{
+  const el=document.getElementById(id);
+  if(el) el.addEventListener("change", updateAll);
+  if(el && el.tagName.toLowerCase()==="textarea") el.addEventListener("input", ()=>{});
+});
+
+// Build compare selects and then apply language
+buildCompareSelects();
+
+// ------------------------------
+// V5: Load budget + module estimator
+// ------------------------------
+const MODULES = [
+  {id:"ammo", fi:"Ampumatarvikkeet", en:"Ammunition", base:[2.5, 5.0, 8.0], must:(ctx)=>ctx.K>=3 || ctx.task==="task_attack" || ctx.task==="task_delay"},
+  {id:"water", fi:"Vesi", en:"Water", base:[2.0, 4.0, 6.0], must:(ctx)=>true},
+  {id:"food", fi:"Ravinto", en:"Food", base:[0.8, 1.6, 2.5], must:(ctx)=>ctx.H>=3},
+  {id:"power", fi:"Virtalähteet", en:"Power (batteries)", base:[0.5, 1.2, 2.0], must:(ctx)=>ctx.task==="task_recon" || ctx.branch==="br_fso"},
+  {id:"med", fi:"Lääkintä (henk./ryhmä)", en:"Medical (ind./team)", base:[0.6, 1.2, 2.0], must:(ctx)=>ctx.K>=3},
+  {id:"weather", fi:"Säänsuoja / lämpö", en:"Weather / thermal", base:[0.6, 1.6, 3.5], must:(ctx)=>ctx.season==="sea_winter" || ctx.season==="sea_autumn" || ctx.season==="sea_spring"},
+  {id:"camouflage", fi:"Naamiointi ja suojaus", en:"Camouflage & concealment", base:[0.3, 0.8, 1.6], must:(ctx)=>ctx.task==="task_recon" || ctx.terrain==="ter_archipelago"},
+  {id:"tools", fi:"Työkalut ja erikoisvälineet", en:"Tools / specialist kit", base:[0.3, 1.0, 3.0], must:(ctx)=>ctx.branch==="br_engineer"},
+  {id:"comm", fi:"Viestivälineet ja lisätarvikkeet", en:"Comms accessories", base:[0.2, 0.6, 1.2], must:(ctx)=>ctx.task==="task_recon" || ctx.branch==="br_recon"},
+  {id:"spares", fi:"Vara ja huolto (pienet)", en:"Spare / sustainment (small)", base:[0.2, 0.6, 1.2], must:(ctx)=>ctx.H>=3},
+];
+
+function getCtx(){
+  const task = document.getElementById("task") ? document.getElementById("task").value : "task_other";
+  const terrain = document.getElementById("terrain") ? document.getElementById("terrain").value : "ter_mixed";
+  const season = document.getElementById("season") ? document.getElementById("season").value : "sea_summer";
+  const branch = document.getElementById("branch") ? document.getElementById("branch").value : "br_other";
+  const L = document.getElementById("L") ? parseInt(document.getElementById("L").value||"3",10) : 3;
+  const H = document.getElementById("H") ? parseInt(document.getElementById("H").value||"3",10) : 3;
+  const K = document.getElementById("K") ? parseInt(document.getElementById("K").value||"3",10) : 3;
+  return {task, terrain, season, branch, L, H, K};
+}
+
+function computeBudget(bw, ctx){
+  let pct = 0.30;
+  if(ctx.season==="sea_winter") pct -= 0.04;
+  if(ctx.season==="sea_autumn" || ctx.season==="sea_spring") pct -= 0.02;
+
+  if(ctx.terrain==="ter_forest") pct -= 0.01;
+  if(ctx.terrain==="ter_archipelago") pct -= 0.01;
+  if(ctx.terrain==="ter_urban") pct -= 0.01;
+
+  if(ctx.L>=5) pct -= 0.03;
+  if(ctx.H>=5) pct -= 0.02;
+  if(ctx.K>=5) pct -= 0.01;
+
+  pct = Math.max(0.20, Math.min(0.35, pct));
+  return {base:bw*0.30, adj:bw*pct, pct};
+}
+
+function levelLabel(lv){
+  return (lv===1) ? t("level_low") : (lv===2) ? t("level_med") : t("level_high");
+}
+
+function renderModules(){
+  const ctx = getCtx();
+  const host = document.getElementById("modules");
+  if(!host) return;
+  host.innerHTML = "";
+
+  MODULES.forEach(mod=>{
+    const must = !!mod.must(ctx);
+    const id = "mod_"+mod.id;
+    const row = document.createElement("div");
+    row.innerHTML = `
+      <div class="modrow">
+        <div class="col">
+          <label><b>${lang==="fi"?mod.fi:mod.en}</b> <span class="modtag ${must?"must":""}">${must ? t("mod_required") : t("mod_optional")}</span></label>
+          <div class="smallnote">${t("mod_level")}: <span id="${id}_lvlText">–</span></div>
+        </div>
+        <div class="col" style="max-width:150px">
+          <label style="display:flex; align-items:center; justify-content:space-between; gap:10px">
+            <span>${t("mod_include")}</span>
+            <input id="${id}_on" type="checkbox" ${must?"checked":""}>
+          </label>
+          <select id="${id}_lvl" style="width:100%">
+            <option value="1">${t("level_low")}</option>
+            <option value="2" selected>${t("level_med")}</option>
+            <option value="3">${t("level_high")}</option>
+          </select>
+        </div>
+      </div>
+    `;
+    host.appendChild(row);
+
+    const on = row.querySelector("#"+id+"_on");
+    const lvl = row.querySelector("#"+id+"_lvl");
+    const lvlText = row.querySelector("#"+id+"_lvlText");
+
+    if(!must) on.checked = false;
+    lvl.value = "2";
+    lvlText.textContent = levelLabel(parseInt(lvl.value,10));
+
+    const update = ()=>{
+      lvlText.textContent = levelLabel(parseInt(lvl.value,10));
+      updateV5();
+    };
+    on.addEventListener("change", update);
+    lvl.addEventListener("change", update);
+  });
+
+  updateV5();
+}
+
+function moduleTotals(){
+  let min=0, sel=0, max=0;
+  MODULES.forEach(mod=>{
+    const id = "mod_"+mod.id;
+    const on = document.getElementById(id+"_on");
+    const lvl = document.getElementById(id+"_lvl");
+    if(!on || !lvl) return;
+    if(!on.checked) return;
+    const lv = parseInt(lvl.value||"2",10);
+    const w = mod.base[lv-1];
+    sel += w;
+    min += w*0.8;
+    max += w*1.2;
+  });
+  return {min, sel, max};
+}
+
+function actionsFromCtx(ctx, deltaKg){
+  const actions = [];
+  if(deltaKg > 0){
+    actions.push(lang==="fi" ? "Poista mukavuuskuorma ja päällekkäisyydet ennen kuin kosket kriittiseen (ammus, lääkintä, lämpö)." :
+                              "Remove comfort weight and duplicates before touching critical items (ammo, medical, thermal).");
+    actions.push(lang==="fi" ? "Tasaa kuormahajonta: jaa yhteiskalusto ja raskaat moduulit tasaisesti." :
+                              "Reduce dispersion: redistribute common kit and heavy modules.");
+    if(ctx.H>=3){
+      actions.push(lang==="fi" ? "Pienennä puskureita vain jos huolto voidaan oikeasti varmistaa (aika, reitti, vaihtoehto)." :
+                                "Reduce buffers only if resupply can truly be assured (time, route, alternate).");
+    }
+    if(ctx.season==="sea_winter"){
+      actions.push(lang==="fi" ? "Talvella priorisoi lämpö ja kuiva: karsi muusta, älä eristeestä." :
+                                "In winter, prioritize warmth and dryness: cut elsewhere, not insulation.");
+    }
+    if(ctx.L>=5){
+      actions.push(lang==="fi" ? "Korkea tempo: kevennä ennen liikkeelle lähtöä, ei vasta kun tempo hajoaa." :
+                                "High tempo: lighten before moving, not after tempo collapses.");
+    }
+  } else {
+    actions.push(lang==="fi" ? "Budjetti näyttää hallittavalta. Varmista silti kuormahajonta ja pakolliset moduulit." :
+                              "Budget looks manageable. Still verify dispersion and required modules.");
+    actions.push(lang==="fi" ? "Kokeile pudottaa 1–2 kg: saat usein selvästi paremman tempon ja palautumisen." :
+                              "Try dropping 1–2 kg: you often gain noticeably better tempo and recovery.");
+  }
+  return actions.slice(0,5);
+}
+
+function updateV5(){
+  const bwEl = document.getElementById("bw");
+  if(!bwEl) return;
+  const bw = Math.max(40, Math.min(160, parseFloat(bwEl.value||"85")));
+  const ctx = getCtx();
+  const bud = computeBudget(bw, ctx);
+  const totals = moduleTotals();
+
+  const fmt = (x)=> `${Math.round(x)} kg`;
+  const pct = Math.round(bud.pct*100);
+
+  const zone = (totals.sel <= bud.adj) ? t("budget_zone_green") :
+               (totals.sel <= bud.adj*1.10) ? t("budget_zone_yellow") : t("budget_zone_red");
+
+  document.getElementById("budgetBase").textContent = fmt(bud.base);
+  document.getElementById("budgetAdj").textContent = fmt(bud.adj);
+  document.getElementById("budgetZone").textContent = zone;
+  document.getElementById("budgetExpl").textContent =
+    (lang==="fi" ? `Säädetty budjetti = ${pct}% kehonpainosta (olosuhdesäätö).` :
+                   `Adjusted budget = ${pct}% of bodyweight (condition-adjusted).`);
+
+  document.getElementById("estMin").textContent = fmt(totals.min);
+  document.getElementById("estSel").textContent = fmt(totals.sel);
+  document.getElementById("estMax").textContent = fmt(totals.max);
+
+  const delta = totals.sel - bud.adj;
+  document.getElementById("deltaExpl").textContent =
+    (delta > 0) ? (lang==="fi" ? `Ylitys noin ${Math.round(delta)} kg. Kevennä tai jaa kuormaa.` :
+                                `Over by about ${Math.round(delta)} kg. Cut or redistribute.`) :
+                 (lang==="fi" ? `Puskuria noin ${Math.round(-delta)} kg. Pidä hajonta kurissa.` :
+                                `About ${Math.round(-delta)} kg margin. Keep dispersion under control.`);
+
+  const actions = actionsFromCtx(ctx, delta);
+  const ol = document.getElementById("actionsList");
+  if(ol) ol.innerHTML = actions.map(a=>`<li>${a}</li>`).join("");
+}
+
+function bindV5(){
+  const bw = document.getElementById("bw");
+  if(bw) bw.addEventListener("input", updateV5);
+
+  ["branch","task","terrain","season","L","H","K"].forEach(id=>{
+    const el = document.getElementById(id);
+    if(el){
+      el.addEventListener("change", ()=>{ renderModules(); });
+    }
+  });
+}
+
+
+// ------------------------------
+// V6: Risk scale meter (0–20+)
+// ------------------------------
+function scoreBand(score){
+  // Bands (decision-support index)
+  // 0–9   = light
+  // 10–14 = normal
+  // 15–19 = elevated
+  // 20+   = high risk
+  if(score <= 9) return "light";
+  if(score <= 14) return "norm";
+  if(score <= 19) return "elev";
+  return "high";
+}
+function bandLabel(b){
+  if(b==="light") return t("band_light");
+  if(b==="norm") return t("band_norm");
+  if(b==="elev") return t("band_elev");
+  return t("band_high");
+}
+function bandHint(b){
+  if(b==="light") return t("hint_light");
+  if(b==="norm") return t("hint_norm");
+  if(b==="elev") return t("hint_elev");
+  return t("hint_high");
+}
+function updateScale(total){
+  // Backwards-compatible hook: all rendering flows through the unified scale.
+  updateUnified(total);
+}
+
+
+applyLang();
+
+// v6.7: hide Before–After behind Advanced toggle
+const btnAdv = document.getElementById("btnAdvanced");
+const advWrap = document.getElementById("advWrap");
+const advHint = document.getElementById("advHint");
+if(btnAdv && advWrap){
+  btnAdv.addEventListener("click", ()=>{
+    const isHidden = (advWrap.style.display==="none" || !advWrap.style.display);
+    advWrap.style.display = isHidden ? "inline" : "none";
+    if(advHint){ advHint.style.display = isHidden ? "none" : "block"; }
+    btnAdv.classList.toggle("active", isHidden);
+    // if hiding while BA active, fall back to Single
+    const baBtn = document.getElementById("modeBA");
+    const singleBtn = document.getElementById("modeSingle");
+    if(!isHidden && baBtn && baBtn.classList.contains("active") && singleBtn){
+      singleBtn.click();
+    }
+  });
+  // default: keep hidden
+  advWrap.style.display = "none";
+}
+
+
+// v6.7: Compare mode behind Advanced
+const btnAdvanced = document.getElementById("btnAdvanced");
+const btnCompare = document.getElementById("modeCompare");
+const btnSingle = document.getElementById("modeSingle");
+if(btnAdvanced && btnCompare && btnSingle){
+  btnAdvanced.addEventListener("click", ()=>{
+    const hidden = (btnCompare.style.display==="none" || getComputedStyle(btnCompare).display==="none");
+    btnCompare.style.display = hidden ? "inline-block" : "none";
+    btnAdvanced.classList.toggle("active", hidden);
+    // If we just hid compare while it was active, revert to single
+    if(!hidden && btnCompare.classList.contains("active")){
+      btnSingle.click();
+    }
+  });
+  // ensure hidden on load
+  btnCompare.style.display = "none";
+}
+
+
+// v6.7: unified result + scale display (one source of truth)
+function updateUnified(total){
+  const ladder = document.getElementById('unifiedLadder');
+  const numEl  = document.getElementById('unifiedScore');
+  const bandEl = document.getElementById('unifiedBand');
+  const hintEl = document.getElementById('unifiedHint');
+  if(!ladder || !numEl || !bandEl || !hintEl) return;
+
+  const segs = Array.from(ladder.querySelectorAll('.ladSeg'));
+  if(!segs.length) return;
+
+  const raw = Number(total);
+  const score = Number.isFinite(raw) ? raw : 0;
+  const v = Math.max(0, Math.min(20, Math.round(score)));
+
+  // Band thresholds (0–9 light, 10–14 normal, 15–19 elevated, 20+ high risk)
+  let bandKey = 'light';
+  if(v >= 20) bandKey = 'high';
+  else if(v >= 15) bandKey = 'elevated';
+  else if(v >= 10) bandKey = 'normal';
+
+  // Colors (kept inline to avoid CSS/UA quirks)
+  const colors = {
+    light:   '#3bd16f',   // green
+    normal:  '#2e86ff',   // blue
+    elevated:'#f2c94c',   // amber
+    high:    '#ff4d4d'    // red
+  };
+
+  // Paint the ladder: segments up to score = filled, others dim
+  const dim = 'rgba(255,255,255,0.06)';
+  segs.forEach((seg, i) => {
+    const point = i + 1; // 1..20
+    let baseKey = 'light';
+    if(point >= 20) baseKey = 'high';
+    else if(point >= 15) baseKey = 'elevated';
+    else if(point >= 10) baseKey = 'normal';
+
+    const c = colors[baseKey];
+    if(i < v){
+      seg.style.background = `linear-gradient(180deg, ${c}EE, ${c}99)`;
+      seg.style.boxShadow  = `0 0 10px ${c}55`;
+      seg.style.opacity    = '1';
+    } else {
+      seg.style.background = dim;
+      seg.style.boxShadow  = 'none';
+      seg.style.opacity    = '1';
+    }
+  });
+
+  // Texts
+  numEl.textContent = String(v);
+
+  const bn = (I18N[LANG] && I18N[LANG].bandNames && I18N[LANG].bandNames[bandKey]) || bandKey;
+  bandEl.textContent = `${bn} (${v})`;
+
+  const ht = (I18N[LANG] && I18N[LANG].bandHints && I18N[LANG].bandHints[bandKey]) || '';
+  hintEl.textContent = ht;
+}
+
+
+
+/* === KUORMA+ Unified Result + Scale (robust rewrite) === */
+(function(){
+  const bands = [
+    {min: 0,  max: 9,  key: "light",    color: "#2e7d32"},
+    {min: 10, max: 14, key: "normal",   color: "#f9a825"},
+    {min: 15, max: 19, key: "elevated", color: "#ef6c00"},
+    {min: 20, max: 999, key:"highrisk", color: "#c62828"},
+  ];
+
+  function clamp(n, a, b){ return Math.max(a, Math.min(b, n)); }
+
+  function getBand(points){
+    const p = Number(points) || 0;
+    for (const b of bands){
+      if (p >= b.min && p <= b.max) return b;
+    }
+    return bands[bands.length-1];
+  }
+
+  function t(key){
+    // expects existing i18n function getText(key) or I18N[currentLang][key]
+    try{
+      if (typeof window.getText === "function") return window.getText(key);
+      if (window.I18N && window.currentLang && window.I18N[window.currentLang] && window.I18N[window.currentLang][key])
+        return window.I18N[window.currentLang][key];
+    }catch(e){}
+    return key;
+  }
+
+  function ensureI18nKeys(){
+    // add missing keys safely if global I18N exists
+    try{
+      if (!window.I18N) return;
+      const fi = window.I18N.fi || (window.I18N.fi = {});
+      const en = window.I18N.en || (window.I18N.en = {});
+      fi.scale_points_label = fi.scale_points_label || "Pisteet";
+      en.scale_points_label = en.scale_points_label || "Points";
+      fi.band_light = fi.band_light || "Kevyt";
+      fi.band_normal = fi.band_normal || "Normaali";
+      fi.band_elevated = fi.band_elevated || "Kohonnut";
+      fi.band_highrisk = fi.band_highrisk || "Suuri riski";
+      en.band_light = en.band_light || "Light";
+      en.band_normal = en.band_normal || "Normal";
+      en.band_elevated = en.band_elevated || "Elevated";
+      en.band_highrisk = en.band_highrisk || "High risk";
+    }catch(e){}
+  }
+
+  function bandLabel(b){
+    const map = {
+      light: t("band_light"),
+      normal: t("band_normal"),
+      elevated: t("band_elevated"),
+      highrisk: t("band_highrisk")
+    };
+    return map[b.key] || b.key;
+  }
+
+  function setText(id, txt){
+    const el = document.getElementById(id);
+    if (el) el.textContent = txt;
+  }
+
+  function setHTML(id, html){
+    const el = document.getElementById(id);
+    if (el) el.innerHTML = html;
+  }
+
+  function renderLadder(container, points, band){
+    if (!container) return;
+    const p = clamp(Number(points)||0, 0, 20);
+    const filled = Math.round(p); // integer fill
+    // Build 21 segments (0..20) but visually 20 bars
+    const segCount = 20;
+    container.innerHTML = "";
+    for (let i=1;i<=segCount;i++){
+      const s = document.createElement("span");
+      s.className = "ladderSeg";
+      const active = i <= filled;
+      s.style.background = active ? band.color : "rgba(255,255,255,0.06)";
+      s.style.boxShadow = active ? "0 0 10px rgba(0,0,0,0.25) inset" : "none";
+      container.appendChild(s);
+    }
+    // marker
+    const marker = container.parentElement && container.parentElement.querySelector(".ladderMarker");
+    if (marker){
+      const pct = (p/20)*100;
+      marker.style.left = `calc(${pct}% - 8px)`;
+      marker.style.borderColor = band.color;
+    }
+  }
+
+  function applyBandColor(resultCard, band){
+    if (!resultCard) return;
+    resultCard.style.borderColor = "rgba(220,190,120,0.25)";
+    resultCard.style.boxShadow = `0 0 0 1px rgba(0,0,0,0.0), 0 0 30px rgba(0,0,0,0.35)`;
+    const pill = resultCard.querySelector(".bandPill");
+    if (pill){
+      pill.style.background = band.color;
+      pill.style.color = "#111";
+    }
+  }
+
+  function render(points){
+    ensureI18nKeys();
+    const p = Number(points)||0;
+    const band = getBand(p);
+
+    // Find unified block; if missing, do nothing.
+    const block = document.getElementById("unifiedResultScale");
+    if (!block) return;
+
+    setText("unifiedPointsLabel", t("scale_points_label"));
+    setText("unifiedPointsValue", String(p));
+    setText("unifiedBandText", `${bandLabel(band)} (${p})`);
+
+    const hintEl = document.getElementById("unifiedHint");
+    if (hintEl){
+      const hints = {
+        light: t("hint_light") || "OK. Maintain profile.",
+        normal: t("hint_normal") || "Watch fatigue. Maintain tempo.",
+        elevated: t("hint_elevated") || "Cut non-critical. Rebalance loads.",
+        highrisk: t("hint_highrisk") || "High risk. Change plan or resupply."
+      };
+      hintEl.textContent = hints[band.key] || "";
+    }
+
+    const ladder = document.getElementById("unifiedLadder");
+    renderLadder(ladder, p, band);
+    applyBandColor(block, band);
+  }
+
+  // Expose for recalc hook
+  window.__kuormaUnifiedRender = render;
+
+  // Bind to language toggle and all inputs, as fallback
+  function bind(){
+    // Any input/select change triggers render by reading current total from existing UI, if available.
+    const handler = () => {
+      // Try to read score from existing computed element first
+      let p = null;
+      const candidates = ["resultPoints","pointsValue","totalPoints","scoreValue"];
+      for (const id of candidates){
+        const el = document.getElementById(id);
+        if (el && el.textContent && /\d/.test(el.textContent)){
+          p = parseInt(el.textContent.replace(/[^\d]/g,""),10);
+          break;
+        }
+      }
+      if (p === null){
+        // fallback: parse from equation line like "... = 22"
+        const eq = document.getElementById("resultEquation");
+        if (eq && eq.textContent && eq.textContent.includes("=")){
+          const m = eq.textContent.match(/=\s*([0-9]+)/);
+          if (m) p = parseInt(m[1],10);
+        }
+      }
+      if (p === null) p = 0;
+      render(p);
+    };
+
+    document.querySelectorAll("select,input,textarea,button").forEach(el=>{
+      el.addEventListener("change", handler, {passive:true});
+      el.addEventListener("input", handler, {passive:true});
+      el.addEventListener("click", handler, {passive:true});
+    });
+    // language buttons might set currentLang; call after a tick
+    setTimeout(handler, 50);
+    setTimeout(handler, 250);
+  }
+
+  if (document.readyState === "loading"){
+    document.addEventListener("DOMContentLoaded", bind);
+  } else {
+    bind();
+  }
+})();
+
+
+
+/* === V6.x HOTFIX: Unified result + ladder scale (self-contained) === */
+(function(){
+  const ladder = document.getElementById('unifiedLadder');
+  const scoreEl = document.getElementById('unifiedScore');
+  const bandEl = document.getElementById('unifiedBand');
+  const hintEl = document.getElementById('unifiedHint');
+  const formulaEl = document.getElementById('formula') || document.querySelector('[data-role="formula"]');
+  if(!ladder || !scoreEl || !bandEl) return;
+
+  function ensureSegments(){
+    if(ladder.dataset.built==='1') return;
+    ladder.innerHTML='';
+    for(let i=0;i<21;i++){
+      const seg=document.createElement('div');
+      seg.className='ladSeg';
+      ladder.appendChild(seg);
+    }
+    ladder.dataset.built='1';
+  }
+
+  function parsePoints(){
+    const t = (formulaEl?.textContent || '').trim();
+    const m = t.match(/=\s*(-?\d+)/);
+    if(m) return parseInt(m[1],10);
+    // fallback: try find last number in result line
+    const m2 = t.match(/(-?\d+)\s*$/);
+    return m2 ? parseInt(m2[1],10) : 0;
+  }
+
+  function getLang(){
+    return (window.currentLang || document.documentElement.lang || 'fi').toLowerCase().startsWith('en') ? 'en' : 'fi';
+  }
+
+  function bandFor(p){
+    // 0–4 light, 5–9 normal, 10–14 elevated, 15–20 high risk, 21+ high risk
+    if(p<=4) return 'light';
+    if(p<=9) return 'normal';
+    if(p<=14) return 'elevated';
+    return 'high';
+  }
+
+  function bandLabel(b, p, lang){
+    if(lang==='fi'){
+      if(b==='light') return `Kevyt kuormitus (${p})`;
+      if(b==='normal') return `Normaali kuormitus (${p})`;
+      if(b==='elevated') return `Kohonnut kuormitus (${p})`;
+      return `Suuri riski (${p})`;
+    }
+    if(b==='light') return `Light load (${p})`;
+    if(b==='normal') return `Normal load (${p})`;
+    if(b==='elevated') return `Elevated load (${p})`;
+    return `High risk (${p})`;
+  }
+
+  function hintText(b, lang){
+    if(lang==='fi'){
+      if(b==='light') return 'Pidä rytmi ja seuraa väsymystä.';
+      if(b==='normal') return 'Normaali taso. Tarkista kuorman tasaisuus ryhmän sisällä.';
+      if(b==='elevated') return 'Karsi. Jaa yhteiskalustoa. Suunnittele täydennykset.';
+      return 'Muuta suunnitelmaa: kevennä, jaa tehtävää tai lisää täydennyksiä.';
+    }
+    if(b==='light') return 'Maintain tempo and monitor fatigue.';
+    if(b==='normal') return 'Normal level. Check intra-team load dispersion.';
+    if(b==='elevated') return 'Cut items, redistribute common kit, plan resupply.';
+    return 'Change the plan: lighten, split tasks, or increase resupply.';
+  }
+
+  function zoneClass(i){
+    if(i<5) return ['cLight','light'];
+    if(i<10) return ['cNorm','norm'];
+    if(i<15) return ['cElev','elev'];
+    return ['cRisk','risk'];
+  }
+
+  function render(){
+    ensureSegments();
+    const p = parsePoints();
+    const lang = getLang();
+    const b = bandFor(p);
+
+    // Always update text first
+    scoreEl.textContent = String(p);
+    bandEl.textContent = bandLabel(b, p, lang);
+    if(hintEl) hintEl.textContent = hintText(b, lang);
+
+    // Color ladder
+    const segs = ladder.querySelectorAll('.ladSeg');
+    const filled = Math.max(0, Math.min(p, 20));
+    segs.forEach((seg, idx)=>{
+      const [base, filledClass] = zoneClass(idx);
+      seg.className = 'ladSeg ' + base;
+      if(idx < filled){
+        seg.classList.add('on', filledClass);
+      }
+    });
+
+    // Keep a marker position (CSS var) if marker exists
+    const marker = document.getElementById('unifiedMarker');
+    if(marker){
+      const clamped = Math.max(0, Math.min(p, 20));
+      const pct = (clamped/20)*100;
+      marker.style.left = pct + '%';
+    }
+  }
+
+  // Render often enough to win against other handlers
+  const schedule = ()=>setTimeout(render, 0);
+  ['change','input','click'].forEach(ev=>document.addEventListener(ev, schedule, true));
+  // Watch formula changes
+  if(window.MutationObserver && formulaEl){
+    new MutationObserver(schedule).observe(formulaEl, {subtree:true, childList:true, characterData:true});
+  }
+  // Interval fallback (safe, lightweight)
+  setInterval(render, 400);
+  render();
+})();
+
+</script>
+
+</body>
+</html>
