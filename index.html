@@ -1,0 +1,1469 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>KUORMA+</title>
+<style>
+  :root{
+    --bg0:#07090c;
+    --bg1:#0b0e13;
+    --card:#0e1117;
+    --card2:#0b0f15;
+    --line:rgba(231,231,231,.12);
+    --line2:rgba(0,0,0,.55);
+    --text:rgba(231,231,231,.92);
+    --muted:rgba(231,231,231,.68);
+    --muted2:rgba(231,231,231,.52);
+    --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    --sans: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+
+    /* JA2-ish accents */
+    --steel:#1a2434;
+    --brass:#6b5a2f;
+    --brass2:#8b7440;
+    --glow:rgba(210,176,94,.22);
+    --shadow:rgba(0,0,0,.55);
+
+    /* Scale colors (visual only; band labels are computed) */
+    --c1:#1aa85e;   /* green */
+    --c2:#2cbd78;   /* green */
+    --c3:#5bc78c;   /* green */
+    --c4:#9dbb3f;   /* yellow-green */
+    --c5:#c8b64a;   /* yellow */
+    --c6:#d28d3c;   /* orange */
+    --c7:#c14a32;   /* red */
+  }
+
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;
+    font-family:var(--sans);
+    color:var(--text);
+    /* Shader baked into body background to avoid mobile GPU seams from fixed overlays */
+    background-color: var(--bg0);
+    background-image:
+      radial-gradient(1200px 800px at 30% -10%, rgba(90,115,180,.16), transparent 55%),
+      radial-gradient(1000px 700px at 80% 10%, rgba(210,176,94,.14), transparent 50%),
+      radial-gradient(120% 110% at 50% 45%, rgba(0,0,0,0) 0%, rgba(0,0,0,.35) 55%, rgba(0,0,0,.60) 100%),
+      linear-gradient(180deg, var(--bg1), var(--bg0)),
+      repeating-linear-gradient(0deg, rgba(255,255,255,.055) 0px, rgba(255,255,255,.055) 1px, transparent 1px, transparent 42px),
+      repeating-linear-gradient(90deg, rgba(255,255,255,.045) 0px, rgba(255,255,255,.045) 1px, transparent 1px, transparent 42px),
+      repeating-linear-gradient(180deg, rgba(0,0,0,.18) 0px, rgba(0,0,0,.18) 2px, transparent 2px, transparent 6px);
+    background-attachment: scroll;
+    background-repeat: no-repeat, no-repeat, no-repeat, no-repeat, repeat, repeat, repeat;
+  }
+
+  .wrap{max-width:820px;margin:0 auto;padding:16px 14px 28px}
+
+  .topbar{
+    display:flex;gap:12px;align-items:flex-start;justify-content:space-between;
+    padding:12px 12px 10px;
+    border:1px solid var(--line);
+    border-radius:16px;
+    background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(0,0,0,.22));
+    box-shadow:0 14px 40px rgba(0,0,0,.35);
+  }
+
+  .brand h1{margin:0;font-family:var(--mono);letter-spacing:.08em;font-size:22px}
+  .subtitle{margin-top:6px;font-size:12px;color:var(--muted);line-height:1.25;max-width:42ch}
+
+  .actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+
+  .btn{
+    appearance:none;border:1px solid var(--line);
+    background:linear-gradient(180deg, rgba(26,36,52,.45), rgba(0,0,0,.35));
+    color:var(--text);
+    padding:10px 12px;
+    border-radius:999px;
+    font-family:var(--mono);
+    letter-spacing:.08em;
+    font-size:12px;
+    cursor:pointer;
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,.35), 0 6px 18px rgba(0,0,0,.25);
+  }
+  .btn:active{transform:translateY(1px)}
+  .btn.primary{border-color:rgba(210,176,94,.28); box-shadow: inset 0 0 0 1px rgba(0,0,0,.35), 0 0 0 3px rgba(210,176,94,.06), 0 8px 22px rgba(0,0,0,.26)}
+
+  .panel{
+    margin-top:12px;
+    border:1px solid var(--line);
+    border-radius:16px;
+    background:linear-gradient(180deg, rgba(255,255,255,.025), rgba(0,0,0,.22));
+    box-shadow:0 14px 40px rgba(0,0,0,.26);
+    overflow:hidden;
+  }
+
+  .panelHeader{
+    display:flex;align-items:center;justify-content:space-between;gap:10px;
+    padding:14px 14px 12px;
+    border-bottom:1px solid var(--line);
+    background:linear-gradient(180deg, rgba(210,176,94,.08), rgba(0,0,0,0));
+  }
+
+  .panelHeader h2{margin:0;font-family:var(--mono);letter-spacing:.12em;font-size:14px}
+  .panelHeader .hint{font-size:11px;color:var(--muted);line-height:1.2}
+
+  details{border-top:1px solid rgba(255,255,255,.06)}
+  details:first-of-type{border-top:none}
+  summary{
+    list-style:none;
+    cursor:pointer;
+    padding:12px 14px;
+    display:flex;align-items:center;justify-content:space-between;gap:12px;
+    font-family:var(--mono);
+    letter-spacing:.1em;
+    color:rgba(231,231,231,.88);
+  }
+  summary::-webkit-details-marker{display:none}
+  .sumRight{display:flex;gap:10px;align-items:center}
+  .badge{
+    font-family:var(--mono);
+    font-size:11px;
+    letter-spacing:.08em;
+    padding:5px 8px;
+    border-radius:999px;
+    border:1px solid var(--line);
+    background:rgba(255,255,255,.035);
+    color:rgba(231,231,231,.82);
+    max-width:38vw;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+  }
+  .chev{opacity:.7}
+  details[open] .chev{transform:rotate(180deg)}
+
+  .content{padding:0 14px 14px}
+
+  .grid{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap:10px;
+  }
+  @media (max-width:520px){
+    .grid{grid-template-columns:1fr}
+    .subtitle{max-width:60vw}
+  }
+
+  .tile{
+    border:1px solid rgba(255,255,255,.10);
+    background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(0,0,0,.28));
+    border-radius:14px;
+    padding:12px 12px 10px;
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,.35);
+    cursor:pointer;
+    user-select:none;
+    min-height:60px;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    gap:6px;
+  }
+  .tile strong{font-size:13px;letter-spacing:.02em}
+  .tile span{font-size:11px;color:var(--muted)}
+  .tile.on{border-color:rgba(210,176,94,.35); box-shadow: inset 0 0 0 1px rgba(0,0,0,.35), 0 0 0 3px rgba(210,176,94,.06)}
+
+  .checks{display:flex;flex-direction:column;gap:10px}
+  .check{
+    display:flex;align-items:flex-start;gap:10px;
+    padding:10px 10px;
+    border:1px solid rgba(255,255,255,.10);
+    background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(0,0,0,.28));
+    border-radius:14px;
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,.35);
+  }
+  .check input{margin-top:2px;transform:scale(1.12)}
+  .check b{font-size:13px}
+  .check small{display:block;margin-top:4px;color:var(--muted);font-size:11px;line-height:1.25}
+
+  /* RESULT (compact, single signal) */
+  .resultWrap{padding:14px}
+  .eq{
+    font-family:var(--mono);
+    font-size:12px;
+    padding:10px 12px;
+    border-radius:14px;
+    border:1px solid var(--line);
+    background:rgba(0,0,0,.22);
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  }
+  .scoreRow{display:flex;gap:12px;align-items:center;justify-content:space-between;margin-top:10px}
+  .scoreBig{font-family:var(--mono);font-size:42px;letter-spacing:.04em;margin:0;line-height:1}
+  .scoreMeta{display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+  .band{
+    font-family:var(--mono);
+    font-size:12px;
+    letter-spacing:.1em;
+    padding:8px 10px;
+    border-radius:999px;
+    border:1px solid var(--line);
+    background:rgba(255,255,255,.04);
+    max-width:62vw;
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  }
+  .bandSub{font-size:11px;color:var(--muted);text-align:right;max-width:62vw;line-height:1.25}
+
+  /* SCALE — rebuilt to never overflow: grid segments that flex with width */
+  .scaleBox{
+    margin-top:12px;
+    border:1px solid var(--line);
+    border-radius:14px;
+    background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(0,0,0,.24));
+    padding:10px 10px 12px;
+    overflow:hidden;
+  }
+  .scale{
+    position:relative;
+    display:grid;
+    grid-template-columns:repeat(25, 1fr);
+    gap:4px;
+    align-items:end;
+  }
+  .seg{
+    width:100%;
+    height:18px;
+    border-radius:7px;
+    opacity:.10;
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,.35);
+    transition: opacity .12s ease, filter .12s ease, transform .12s ease;
+  }
+  .seg.on{opacity:1;transform:translateY(-1px);filter:drop-shadow(0 0 10px rgba(255,255,255,.10))}
+
+  .marker{
+    position:absolute;
+    top:-4px;
+    width:2px;
+    height:30px;
+    border-radius:2px;
+    background:rgba(255,255,255,.85);
+    box-shadow: 0 0 0 1px rgba(0,0,0,.35), 0 0 12px rgba(255,255,255,.12);
+    pointer-events:none;
+    left:0;
+    transform:translateX(-1px);
+  }
+
+  .ticks{display:flex;justify-content:space-between;margin-top:8px;color:rgba(231,231,231,.55);font-family:var(--mono);font-size:11px}
+
+  .rec{
+    margin-top:12px;
+    border-top:1px solid rgba(255,255,255,.08);
+    padding-top:10px;
+  }
+  .rec h3{margin:0 0 6px;font-family:var(--mono);letter-spacing:.12em;font-size:12px;color:rgba(231,231,231,.84)}
+  .list{margin:0;padding-left:18px;color:var(--muted);font-size:12px;line-height:1.28}
+  .list li{margin:6px 0}
+
+  .footer{padding:12px 14px 14px;border-top:1px solid var(--line);color:rgba(231,231,231,.62);font-size:11px;line-height:1.35}
+
+  /* Hide Finnish helper text unless FI */
+  .fi{display:none}
+  body[data-lang="fi"] .fi{display:block}
+  body[data-lang="fi"] .en{display:none}
+
+  /* Compact mode defaults: only one details open */
+
+
+  /* Keep wrapper above background layers */
+  .wrap{position:relative; z-index:1;}
+
+  /* Tools row (copy / PDF) */
+  .toolsRow{display:flex; gap:10px; align-items:center; justify-content:flex-end; margin:10px 0 0; flex-wrap:wrap;}
+  .btn.small{padding:10px 12px; font-size:12px; letter-spacing:.12em; text-transform:uppercase;}
+
+  /* Print/PDF */
+  @media print{
+    body{background:#fff !important; color:#111 !important;}
+    body::before, body::after{display:none !important;}
+    .topbar, #inputsPanel, #modPanel, #footer, #resetBtn{display:none !important;}
+    #resultPanel{box-shadow:none !important; border:1px solid #ddd !important;}
+    .panel{break-inside:avoid;}
+    .btn{display:none !important;}
+  }
+
+  /* --- Load Budget V1 (harmonized) --- */
+  #budgetPanel .panelHeader h2{margin:0}
+  #budgetPanel .lbWrap{padding:14px}
+  #budgetPanel .lbGrid{display:grid; gap:12px}
+  @media(min-width:900px){#budgetPanel .lbGrid{grid-template-columns:320px 1fr}}
+  #budgetPanel .lbCard{
+    border:1px solid rgba(255,255,255,0.12);
+    background:rgba(0,0,0,0.14);
+    border-radius:12px;
+    padding:12px;
+  }
+  #budgetPanel .lbRow{display:flex; gap:8px; flex-wrap:wrap; align-items:center}
+  #budgetPanel label.lbLbl{display:block; font-size:12px; opacity:.8; margin:0 0 4px}
+  #budgetPanel .lbLbl2{font-size:12px; opacity:.75; text-transform:uppercase; letter-spacing:.08em; margin:10px 0 6px}
+  #budgetPanel input.lbNum{
+    width:140px;
+    padding:8px 10px;
+    border-radius:10px;
+    border:1px solid rgba(255,255,255,0.14);
+    background:rgba(0,0,0,0.22);
+    color:inherit;
+    outline:none;
+  }
+  #budgetPanel input.lbNum:focus{box-shadow:0 0 0 3px rgba(210,176,94,.16)}
+  #budgetPanel .lbBtn{
+    padding:8px 10px;
+    border-radius:999px;
+    border:1px solid rgba(255,255,255,0.14);
+    background:rgba(0,0,0,0.22);
+    color:inherit;
+    cursor:pointer;
+    font-size:13px;
+    line-height:1;
+  }
+  #budgetPanel .lbBtn:hover{background:rgba(0,0,0,0.30)}
+  #budgetPanel .lbBtn.on{
+    background:rgba(210,176,94,.18);
+    border-color:rgba(210,176,94,.35);
+  }
+  #budgetPanel .lbHr{border:0; border-top:1px solid rgba(255,255,255,0.10); margin:12px 0}
+  #budgetPanel .lbHint{font-size:12px; opacity:.75; margin-top:8px; line-height:1.35}
+  #budgetPanel .lbOut{display:grid; gap:6px; margin-top:6px}
+  #budgetPanel .lbK{opacity:.75}
+  .lb-context-note{
+    font-size:0.85rem;
+    opacity:0.75;
+    margin:6px 0 10px;
+    line-height:1.3;
+  }
+  .lb-context-sub{display:block; margin-top:2px}
+  .lb-context-dynamic{
+    font-size:0.85rem;
+    opacity:0.85;
+    margin:6px 0 12px;
+    line-height:1.3;
+  }
+  .lb-context-dynamic .tag{
+    display:inline-block;
+    padding:2px 8px;
+    margin:2px 6px 2px 0;
+    border:1px solid rgba(255,255,255,0.15);
+    border-radius:999px;
+    opacity:0.95;
+  }
+
+
+  .lbBand{ font-weight:600; }
+  .lbBand-GREEN{ color: #9fe7b4; }
+  .lbBand-YELLOW{ color: #ffe28a; }
+  .lbBand-ORANGE{ color: #ffbf7a; }
+  .lbBand-RED{ color: #ff8a8a; }
+
+</style>
+</head>
+<body data-lang="en">
+<div class="wrap">
+
+  <div class="topbar">
+    <div class="brand">
+      <h1>KUORMA+</h1>
+      <div class="subtitle" data-i18n="subtitle"></div>
+    </div>
+    <div class="actions">
+      <button class="btn" id="langBtn" type="button">ENG / FIN</button>
+      <button class="btn primary" id="resetBtn" type="button" data-i18n="reset"></button>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panelHeader">
+      <div>
+        <h2 data-i18n="inputsTitle"></h2>
+        <div class="hint" data-i18n="inputsHint"></div>
+      </div>
+      <div class="badge" id="progressBadge">0/4</div>
+    </div>
+
+    <details id="d_unit" open>
+      <summary>
+        <span data-i18n="unitType"></span>
+        <span class="sumRight"><span class="badge" id="sum_unit" data-i18n="notSelected"></span><span class="chev">▾</span></span>
+      </summary>
+      <div class="content">
+        <div class="grid" id="unitGrid"></div>
+      </div>
+    </details>
+
+    <details id="d_mission">
+      <summary>
+        <span data-i18n="missionType"></span>
+        <span class="sumRight"><span class="badge" id="sum_mission" data-i18n="notSelected"></span><span class="chev">▾</span></span>
+      </summary>
+      <div class="content">
+        <div class="grid" id="missionGrid"></div>
+      </div>
+    </details>
+
+    <details id="d_env">
+      <summary>
+        <span data-i18n="terrain"></span>
+        <span class="sumRight"><span class="badge" id="sum_env" data-i18n="notSelected"></span><span class="chev">▾</span></span>
+      </summary>
+      <div class="content">
+        <div class="grid" id="envGrid"></div>
+      </div>
+    </details>
+
+    <details id="d_weather">
+      <summary>
+        <span data-i18n="weather"></span>
+        <span class="sumRight"><span class="badge" id="sum_weather" data-i18n="notSelected"></span><span class="chev">▾</span></span>
+      </summary>
+      <div class="content">
+        <div class="grid" id="weatherGrid"></div>
+      </div>
+    </details>
+
+    <details id="d_mod">
+      <summary>
+        <span data-i18n="modifiers"></span>
+        <span class="sumRight"><span class="badge" id="sum_mod">0</span><span class="chev">▾</span></span>
+      </summary>
+      <div class="content">
+        <div class="checks" id="modList"></div>
+      </div>
+    </details>
+
+  </div>
+
+  <div class="panel" id="resultPanel">
+    <div class="panelHeader">
+      <div>
+        <h2 data-i18n="resultTitle"></h2>
+        <div class="hint" data-i18n="resultHint"></div>
+      </div>
+      <div class="badge" id="bandBadge">—</div>
+    </div>
+
+    <div class="resultWrap">
+      <div class="eq" id="eq">—</div>
+
+        <div class="toolsRow">
+          <button class="btn small" id="btnCopy" type="button" data-i18n="copyReport"></button>
+          <button class="btn small" id="btnPdf" type="button" data-i18n="savePdf"></button>
+        </div>
+
+      <div class="scoreRow">
+        <div>
+          <div style="font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:.12em" data-i18n="pointsLabel"></div>
+          <p class="scoreBig" id="score">0</p>
+        </div>
+        <div class="scoreMeta">
+          <div class="band" id="band">—</div>
+          <div class="bandSub" id="bandSub">—</div>
+        </div>
+      </div>
+
+      <div class="scaleBox" aria-label="Load pressure scale">
+        <div class="scale" id="scale"></div>
+        <div class="ticks"><span>0</span><span>5</span><span>10</span><span>15</span><span>20+</span></div>
+      </div>
+
+      <div class="rec">
+        <h3 data-i18n="recoTitle"></h3>
+        <ul class="list" id="reco"></ul>
+      </div>
+
+    </div>
+
+    <div class="footer" id="footer"></div>
+  </div>
+
+</div>
+
+  <!-- Load Budget (V1) -->
+  <div class="panel" id="budgetPanel">
+    <div class="panelHeader">
+      <h2>Load Budget</h2>
+    </div>
+    <div class="lbWrap" id="lb-wrap">
+      <div class="lb-context-note" id="lb-context-note">
+        <span data-i18n="lbContextTitle"></span><br>
+        <span class="lb-context-sub" data-i18n="lbContextSub"></span>
+      </div>
+      <div id="lb-context-dynamic" class="lb-context-dynamic" aria-live="polite"></div>
+
+      <div class="lbGrid">
+        <div class="lbCard">
+          <div class="lbRow">
+            <label class="lbLbl" for="lb-bw">Bodyweight (kg)</label>
+            <input class="lbNum" id="lb-bw" type="number" min="40" max="200" step="1" value="80">
+          </div>
+          <div class="lbRow">
+            <label class="lbLbl" for="lb-target">Target (% BW)</label>
+            <input class="lbNum" id="lb-target" type="number" min="10" max="60" step="1" value="30">
+          </div>
+
+          <div class="lbHint" id="lb-microhint"></div>
+
+          <hr class="lbHr">
+
+          <div class="lbLbl2">Protection</div>
+          <div class="lbRow">
+            <button class="lbBtn" type="button" data-lb-act="helmet">Helmet (baseline)</button>
+          </div>
+          <div class="lbRow">
+            <button class="lbBtn" type="button" data-lb-act="torso" data-lb-val="pc">Plate carrier (+5%)</button>
+            <button class="lbBtn" type="button" data-lb-act="torso" data-lb-val="heavy">Heavy armor (+7.5%)</button>
+          </div>
+          <div class="lbRow">
+            <button class="lbBtn" type="button" data-lb-act="addon" data-lb-val="pc_addons">Armor add-ons (+2.5%)</button>
+          </div>
+
+          <hr class="lbHr">
+
+          <div class="lbLbl2">Medical</div>
+          <div class="lbRow" id="lb-med"></div>
+
+          <div class="lbLbl2">Comms / EW</div>
+          <div class="lbRow" id="lb-ce"></div>
+
+        </div>
+
+        <div class="lbCard">
+          <div class="lbLbl2">Ammunition</div>
+          <div class="lbRow" id="lb-ammo"></div>
+
+          <div class="lbLbl2">Sustainment</div>
+          <div class="lbRow" id="lb-sus"></div>
+
+          <hr class="lbHr">
+
+          <div class="lbOut">
+            <div><span class="lbK">Used:</span> <span id="lb-used"></span></div>
+            <div><span class="lbK">Free:</span> <span id="lb-free"></span></div>
+            <div><span class="lbK">Band:</span> <span id="lb-band"></span></div>
+          </div>
+
+          <div class="lbHint" id="lb-explain"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+<script>
+window.addEventListener('DOMContentLoaded', () => {
+  // ---------------- i18n ----------------
+  const I18N = {
+    en: {
+      copyFailed: "Copy failed.",
+      lbContextTitle: "ℹ️ Load Budget is context-aware",
+      lbContextSub: "Mission, environment, and modifier selections above affect load limits and recommendations.",
+      lbNoActiveContext: "No active context modifiers",
+      lbMicroHint: "1 microblock = {pct}% BW ≈ {kg} kg @ {bw} kg. UI steps are {uiStep}%.",
+      lbBand_GREEN: "Optimal / sustainable.",
+      lbBand_YELLOW: "Sustained strain likely.",
+      lbBand_ORANGE: "Mobility loss likely.",
+      lbBand_RED: "Combat degradation likely.",
+      copied: "Copied to clipboard.",
+      savePdf: "Save as PDF",
+      copyReport: "Copy report",
+      subtitle: 'Public analysis tool for assessing soldier load pressure. Not a kilogram calculator, but a decision-support framework.',
+      reset: 'RESET',
+      inputsTitle: 'INPUTS',
+      inputsHint: 'Pick one option per category. Modifiers are optional.',
+      notSelected: 'NOT SET',
+      unitType: 'Unit type',
+      missionType: 'Mission type',
+      terrain: 'Environment / terrain',
+      weather: 'Weather / climate stress',
+      modifiers: 'Operational modifiers',
+      resultTitle: 'RESULT',
+      resultHint: 'One score → one band → one scale position.',
+      pointsLabel: 'Points',
+      recoTitle: 'Recommendations',
+      fillRequired: 'Fill required fields.',
+      band_light: 'LIGHT',
+      band_normal: 'NORMAL',
+      band_elev: 'ELEVATED',
+      band_high: 'HIGH RISK',
+      bandSub_light: 'Good mobility margin. Maintain discipline and avoid comfort creep.',
+      bandSub_normal: 'Sustainable if the plan matches resupply and rest.',
+      bandSub_elev: 'Movement and endurance degradation likely. Reduce non-critical load and tighten the plan.',
+      bandSub_high: 'High risk of tempo collapse. Change the plan, task split, or sustainment approach.',
+      footer: 'Use & licensing: You may use and share this tool as-is for educational and non-commercial purposes. Do not repackage, sell, or present it as your own product. KUORMA+ is a public decision-support concept, not a field weight table.',
+
+      // Units
+      u_inf: 'Infantry',
+      u_ranger: 'Ranger / Light infantry',
+      u_mortar: 'Mortar / Fire support',
+      u_at: 'Anti-tank team',
+      u_eng: 'Engineer support',
+      u_ada: 'Air defence',
+      u_sig: 'Signals / Comms',
+      u_med: 'Medical / MEDEVAC',
+
+      // Missions (8)
+      m_off: 'Offensive operations',
+      m_def: 'Defensive operations',
+      m_recce: 'Reconnaissance & surveillance',
+      m_patrol: 'Patrol / presence',
+      m_sec: 'Security operations',
+      m_mob: 'Mobility / engineer support',
+      m_casevac: 'Casualty evacuation / recovery',
+      m_sust: 'Sustainment / logistics support',
+
+      // Environments
+      e_urban: 'Urban / built-up area',
+      e_forest: 'Woodland / forest',
+      e_jungle: 'Jungle / dense vegetation',
+      e_open: 'Open terrain / plains',
+      e_mountain: 'Mountainous terrain',
+      e_desert: 'Arid / desert',
+      e_arctic: 'Arctic / cold weather',
+      e_littoral: 'Littoral / coastal',
+
+      // Weather
+      w_temp: 'Temperate',
+      w_hot: 'Hot',
+      w_cold: 'Cold',
+      w_wet: 'Wet / humid',
+
+      // Modifiers
+      x_duration: 'Extended duration',
+      x_tempo: 'High tempo',
+      x_cas: 'High casualty expectation',
+      x_ew: 'EW / comms friction',
+      x_noveh: 'Limited vehicle support'
+    },
+    fi: {
+      copyFailed: "Kopiointi epäonnistui.",
+      lbContextTitle: "ℹ️ Load Budget huomioi päätyökalun valinnat",
+      lbContextSub: "Tehtävä-, ympäristö- ja modifier-valinnat vaikuttavat kuormarajoihin ja suosituksiin.",
+      lbNoActiveContext: "Ei aktiivisia kontekstimodifioijia",
+      lbMicroHint: "1 microblock = {pct}% BW ≈ {kg} kg ({bw} kg). UI-askel on {uiStep}%.",
+      lbBand_GREEN: "Optimaalinen / kestävä.",
+      lbBand_YELLOW: "Pitkittynyt kuormitus todennäköinen.",
+      lbBand_ORANGE: "Liikkumiskyky heikkenee todennäköisesti.",
+      lbBand_RED: "Taistelukyky heikkenee todennäköisesti.",
+      copied: "Kopioitu leikepöydälle.",
+      savePdf: "Tallenna PDF",
+      copyReport: "Kopioi raportti",
+      subtitle: 'Julkinen analyysityökalu sotilaan kuormituspaineen arviointiin. Ei kilogrammalaskuri, vaan päätöstuen runko.',
+      reset: 'NOLLAA',
+      inputsTitle: 'SYÖTTEET',
+      inputsHint: 'Valitse yksi per kategoria. Lisätekijät ovat valinnaisia.',
+      notSelected: 'EI VALITTU',
+      unitType: 'Joukkotyyppi',
+      missionType: 'Tehtävätyyppi',
+      terrain: 'Ympäristö / maasto',
+      weather: 'Sää / olosuhderasitus',
+      modifiers: 'Lisätekijät',
+      resultTitle: 'TULOS',
+      resultHint: 'Yksi pistemäärä → yksi vyöhyke → yksi paikka skaalalla.',
+      pointsLabel: 'Pisteet',
+      recoTitle: 'Suositukset',
+      fillRequired: 'Täytä pakolliset valinnat.',
+      band_light: 'KEVYT',
+      band_normal: 'NORMAALI',
+      band_elev: 'KOHONNUT',
+      band_high: 'KORKEA RISKI',
+      bandSub_light: 'Hyvä liikkumavara. Pidä kurinalaisuus ja vältä mukavuuskuorman kertymistä.',
+      bandSub_normal: 'Kestää, jos suunnitelma vastaa huoltoa ja lepoa.',
+      bandSub_elev: 'Liike ja kestävyys heikkenevät todennäköisesti. Karsi ei-kriittistä ja tiukenna suunnitelmaa.',
+      bandSub_high: 'Korkea riski tempon romahtamiseen. Muuta suunnitelmaa, jaa tehtävää tai muuta huoltoratkaisua.',
+      footer: 'Käyttö ja lisensointi: Saat käyttää ja jakaa työkalua sellaisenaan opetukseen ja ei-kaupalliseen käyttöön. Älä paketoi, myy tai esitä omana tuotteena. KUORMA+ on julkinen päätöstuen malli, ei kenttäpainotaulukko.',
+
+      u_inf: 'Jalkaväki',
+      u_ranger: 'Jääkäri / kevyt jalkaväki',
+      u_mortar: 'Kranaatinheitin / tulituki',
+      u_at: 'Pst-ryhmä',
+      u_eng: 'Pioneerituki',
+      u_ada: 'Ilmatorjunta',
+      u_sig: 'Viestijoukot',
+      u_med: 'Lääkintä / evakuointi',
+
+      m_off: 'Hyökkäys',
+      m_def: 'Puolustus',
+      m_recce: 'Tiedustelu ja valvonta',
+      m_patrol: 'Partiointi / läsnäolo',
+      m_sec: 'Turvaamistehtävä',
+      m_mob: 'Liikkuvuus / pioneeriapu',
+      m_casevac: 'Haavoittuneen evakuointi / nouto',
+      m_sust: 'Huolto / täydennys',
+
+      e_urban: 'Rakennettu alue',
+      e_forest: 'Metsä',
+      e_jungle: 'Viidakko / tiheä kasvillisuus',
+      e_open: 'Avoin maasto',
+      e_mountain: 'Vuoristo',
+      e_desert: 'Aavikko / kuiva',
+      e_arctic: 'Arktinen / kylmä',
+      e_littoral: 'Rannikko / saaristo',
+
+      w_temp: 'Lauhkea',
+      w_hot: 'Kuuma',
+      w_cold: 'Kylmä',
+      w_wet: 'Märkä / kostea',
+
+      x_duration: 'Pitkä kesto',
+      x_tempo: 'Kova tempo',
+      x_cas: 'Korkea haavoittumisodote',
+      x_ew: 'ELSO / viestihäiriöt',
+      x_noveh: 'Rajoitettu ajoneuvotuki'
+    }
+  };
+
+  let lang = 'en';
+  const t = (k)=> (I18N[lang] && I18N[lang][k]) ? I18N[lang][k] : (I18N.en[k] || k);
+
+  function formatI18n(str, vars){
+    return String(str).replace(/\{(\w+)\}/g, (_,k)=> (vars && (k in vars)) ? vars[k] : `{${k}}`);
+  }
+
+  function applyI18n(){
+    document.body.dataset.lang = lang;
+    document.querySelectorAll('[data-i18n]').forEach(el=>{
+      const key = el.getAttribute('data-i18n');
+      el.textContent = t(key);
+    });
+    document.getElementById('footer').textContent = t('footer');
+
+    // Re-render all option labels and summaries
+    renderAll();
+    update();
+  }
+
+  // ---------------- Data model ----------------
+  // Coefficients: keep simple + globally applicable.
+  // Baseline (required picks): unit + mission + terrain + weather.
+  // Optional modifiers add points.
+
+  const UNITS = [
+    {id:'inf', k:'u_inf', pts:2},
+    {id:'ranger', k:'u_ranger', pts:3},
+    {id:'mortar', k:'u_mortar', pts:3},
+    {id:'at', k:'u_at', pts:3},
+    {id:'eng', k:'u_eng', pts:3},
+    {id:'ada', k:'u_ada', pts:2},
+    {id:'sig', k:'u_sig', pts:2},
+    {id:'med', k:'u_med', pts:2},
+  ];
+
+  const MISSIONS = [
+    {id:'off', k:'m_off', pts:4},
+    {id:'def', k:'m_def', pts:3},
+    {id:'recce', k:'m_recce', pts:4},
+    {id:'patrol', k:'m_patrol', pts:3},
+    {id:'sec', k:'m_sec', pts:3},
+    {id:'mob', k:'m_mob', pts:4},
+    {id:'casevac', k:'m_casevac', pts:5},
+    {id:'sust', k:'m_sust', pts:2},
+  ];
+
+  const ENVS = [
+    {id:'urban', k:'e_urban', pts:4},
+    {id:'forest', k:'e_forest', pts:3},
+    {id:'jungle', k:'e_jungle', pts:5},
+    {id:'open', k:'e_open', pts:2},
+    {id:'mountain', k:'e_mountain', pts:5},
+    {id:'desert', k:'e_desert', pts:4},
+    {id:'arctic', k:'e_arctic', pts:4},
+    {id:'littoral', k:'e_littoral', pts:3},
+  ];
+
+  const WEATHER = [
+    {id:'temp', k:'w_temp', pts:1},
+    {id:'hot', k:'w_hot', pts:3},
+    {id:'cold', k:'w_cold', pts:3},
+    {id:'wet', k:'w_wet', pts:2},
+  ];
+
+  const MODS = [
+    {id:'duration', k:'x_duration', pts:2, sub_en:'Fatigue accumulation and consumables', sub_fi:'Väsymys ja kulutustarvikkeet'},
+    {id:'tempo', k:'x_tempo', pts:2, sub_en:'Reduced rest and faster depletion', sub_fi:'Vähemmän lepoa, nopeampi kulutus'},
+    {id:'cas', k:'x_cas', pts:3, sub_en:'Medical kit, extraction tools and reserves', sub_fi:'Lääkintä, irrotusvälineet ja reservit'},
+    {id:'ew', k:'x_ew', pts:2, sub_en:'Redundancy, power and time cost', sub_fi:'Redundanssi, virta ja aikakustannus'},
+    {id:'noveh', k:'x_noveh', pts:2, sub_en:'More carried common equipment', sub_fi:'Enemmän yhteiskalustoa kannossa'},
+  ];
+
+  const state = {
+    unit:null,
+    mission:null,
+    env:null,
+    weather:null,
+    mods:new Set()
+  };
+
+  // ---------------- UI helpers ----------------
+  const $ = (id)=>document.getElementById(id);
+
+  function makeTiles(list, selectedId, onPick){
+    return list.map(item=>{
+      const div = document.createElement('div');
+      div.className = 'tile' + (selectedId===item.id ? ' on':'' );
+      div.tabIndex = 0;
+      div.setAttribute('role','button');
+      div.setAttribute('aria-pressed', selectedId===item.id ? 'true':'false');
+      const title = document.createElement('strong');
+      title.textContent = t(item.k);
+      const sub = document.createElement('span');
+      sub.textContent = (lang==='fi' && item.sub_fi) ? item.sub_fi : (item.sub_en || '');
+      if(!sub.textContent) sub.style.display='none';
+      div.appendChild(title);
+      div.appendChild(sub);
+      div.addEventListener('click', ()=>onPick(item.id));
+      div.addEventListener('keydown', (e)=>{ if(e.key==='Enter' || e.key===' '){ e.preventDefault(); onPick(item.id);} });
+      return div;
+    });
+  }
+
+  function renderAll(){
+    // Unit
+    const unitGrid = $('unitGrid'); unitGrid.innerHTML='';
+    makeTiles(UNITS, state.unit, (id)=>{state.unit=id; closeOthers('d_unit'); openNext('d_mission'); update();}).forEach(n=>unitGrid.appendChild(n));
+
+    // Mission
+    const missionGrid = $('missionGrid'); missionGrid.innerHTML='';
+    makeTiles(MISSIONS, state.mission, (id)=>{state.mission=id; closeOthers('d_mission'); openNext('d_env'); update();}).forEach(n=>missionGrid.appendChild(n));
+
+    // Env
+    const envGrid = $('envGrid'); envGrid.innerHTML='';
+    makeTiles(ENVS, state.env, (id)=>{state.env=id; closeOthers('d_env'); openNext('d_weather'); update();}).forEach(n=>envGrid.appendChild(n));
+
+    // Weather
+    const weatherGrid = $('weatherGrid'); weatherGrid.innerHTML='';
+    makeTiles(WEATHER, state.weather, (id)=>{state.weather=id; closeOthers('d_weather'); openNext('d_mod'); update();}).forEach(n=>weatherGrid.appendChild(n));
+
+    // Mods
+    const modList = $('modList'); modList.innerHTML='';
+    MODS.forEach(m=>{
+      const row = document.createElement('label');
+      row.className='check';
+      const cb = document.createElement('input');
+      cb.type='checkbox';
+      cb.checked = state.mods.has(m.id);
+      cb.addEventListener('change', ()=>{
+        if(cb.checked) state.mods.add(m.id); else state.mods.delete(m.id);
+        update();
+      });
+      const txt = document.createElement('div');
+      const b = document.createElement('b'); b.textContent = t(m.k) + ` (+${m.pts})`;
+      const sm = document.createElement('small'); sm.textContent = (lang==='fi' ? m.sub_fi : m.sub_en);
+      txt.appendChild(b); txt.appendChild(sm);
+      row.appendChild(cb); row.appendChild(txt);
+      modList.appendChild(row);
+    });
+
+    // summaries (set in update)
+  }
+
+  function closeOthers(openId){
+    // keep the one user just picked open, close earlier ones to reduce clutter
+    ['d_unit','d_mission','d_env','d_weather','d_mod'].forEach(id=>{
+      if(id!==openId){
+        const el = $(id);
+        if(el && el.open){ el.open = false; }
+      }
+    });
+  }
+
+  function openNext(id){
+    const el = $(id);
+    if(el) el.open = true;
+    el?.scrollIntoView({behavior:'smooth', block:'start'});
+  }
+
+  // ---------------- Calculation ----------------
+  const byId = (arr,id)=>arr.find(x=>x.id===id) || null;
+
+  function calc(){
+    if(!state.unit || !state.mission || !state.env || !state.weather){
+      return {ok:false};
+    }
+    const U = byId(UNITS, state.unit);
+    const M = byId(MISSIONS, state.mission);
+    const E = byId(ENVS, state.env);
+    const W = byId(WEATHER, state.weather);
+    let modsSum = 0;
+    state.mods.forEach(id=>{ const m = byId(MODS,id); if(m) modsSum += m.pts; });
+
+    // Base formula (simple, readable):
+    // score = U + M + E + W + mods
+    const score = U.pts + M.pts + E.pts + W.pts + modsSum;
+
+    const eq = `U${U.pts} + T${M.pts} + E${E.pts} + W${W.pts} + X${modsSum} = ${score}`;
+
+    return {ok:true, score, eq, parts:{U,M,E,W,modsSum}};
+  }
+
+  function bandFor(score){
+    // Keep consistent bands across UI:
+    // 0-7 Light, 8-11 Normal, 12-16 Elevated, 17+ High risk
+    if(score<=7) return 'light';
+    if(score<=11) return 'normal';
+    if(score<=16) return 'elev';
+    return 'high';
+  }
+
+  function recommendations(band){
+    // concise; avoid conflicting signals
+    const en = {
+      light:[
+        'Keep current profile; avoid “just in case” additions.',
+        'Check that common kit is shared, not duplicated.',
+      ],
+      normal:[
+        'Maintain discipline: cut comfort weight first.',
+        'Match tempo with resupply and rest windows.',
+        'Balance intra-team load dispersion.',
+      ],
+      elev:[
+        'Make one clear lightening decision before movement.',
+        'Cut non-critical items and remove duplicates.',
+        'Redistribute heavy subsystems and common kit.',
+        'Adjust tempo or shorten the dismounted portion.',
+      ],
+      high:[
+        'Change the plan: split tasks, reduce dismounted time, or add sustainment.',
+        'Prioritize essentials; move comfort and redundancy out first.',
+        'Re-check casualty plan and extraction tools (they add up fast).',
+      ]
+    };
+    const fi = {
+      light:[
+        'Pidä nykyinen profiili; vältä “varmuuden vuoksi” -lisäyksiä.',
+        'Varmista, että yhteiskalusto on jaettu eikä tuplattu.',
+      ],
+      normal:[
+        'Pidä kurinalaisuus: karsi mukavuuskuormaa ensin.',
+        'Sovita tempo huoltoon ja lepoon.',
+        'Tasaa ryhmän sisäistä kuormahajontaa.',
+      ],
+      elev:[
+        'Tee yksi selkeä kevennyspäätös ennen lähtöä.',
+        'Karsi ei-kriittiset ja poista tuplat.',
+        'Jaa raskaat alijärjestelmät ja yhteiskalusto.',
+        'Säädä tempoa tai lyhennä jalkautettua osuutta.',
+      ],
+      high:[
+        'Muuta suunnitelmaa: jaa tehtävää, vähennä jalkautusta tai lisää huoltoa.',
+        'Priorisoi välttämättömät; siirrä mukavuus ja osa redundanssista pois.',
+        'Tarkista haavoittumissuunnitelma ja irrotusvälineet (kasaantuvat nopeasti).',
+      ]
+    };
+    const src = (lang==='fi') ? fi : en;
+    return src[band] || [];
+  }
+
+  // ---------------- Scale rendering (JA2 ladder) ----------------
+  // Visual scale is 25 segments (0..24). Score is clamped to 0..24 for marker & highlight.
+  // This is a visualization of accumulated pressure, not kilograms.
+  const SCALE_MAX = 24;
+
+  function segColor(i){
+    // 0-7 greens, 8-11 yellow-green/yellow, 12-16 orange, 17-24 red
+    if(i<=3) return getComputedStyle(document.documentElement).getPropertyValue('--c1');
+    if(i<=7) return getComputedStyle(document.documentElement).getPropertyValue('--c3');
+    if(i<=11) return getComputedStyle(document.documentElement).getPropertyValue('--c5');
+    if(i<=16) return getComputedStyle(document.documentElement).getPropertyValue('--c6');
+    return getComputedStyle(document.documentElement).getPropertyValue('--c7');
+  }
+
+  function buildScale(score){
+    const el = $('scale');
+    el.innerHTML='';
+
+    const s = Math.max(0, Math.min(SCALE_MAX, Number.isFinite(score)?score:0));
+
+    // Segments
+    for(let i=0;i<=SCALE_MAX;i++){
+      const d = document.createElement('div');
+      d.className='seg' + (i<=s ? ' on':'' );
+      d.style.background = segColor(i);
+      // inactive dimmer
+      if(i>s){ d.style.opacity = '0.06'; }
+      else{ d.style.opacity = '1'; }
+      el.appendChild(d);
+    }
+
+    // Marker (position by percentage)
+    const marker = document.createElement('div');
+    marker.className='marker';
+    const pct = (s / SCALE_MAX) * 100;
+    marker.style.left = `calc(${pct}% )`;
+    el.appendChild(marker);
+  }
+
+  // ---------------- Update loop ----------------
+  function update(){
+    const r = calc();
+
+    // summaries and progress
+    const sumUnit = $('sum_unit');
+    const sumMission = $('sum_mission');
+    const sumEnv = $('sum_env');
+    const sumWeather = $('sum_weather');
+
+    const su = byId(UNITS,state.unit);
+    const sm = byId(MISSIONS,state.mission);
+    const se = byId(ENVS,state.env);
+    const sw = byId(WEATHER,state.weather);
+
+    sumUnit.textContent = su ? t(su.k) : t('notSelected');
+    sumMission.textContent = sm ? t(sm.k) : t('notSelected');
+    sumEnv.textContent = se ? t(se.k) : t('notSelected');
+    sumWeather.textContent = sw ? t(sw.k) : t('notSelected');
+
+    $('sum_mod').textContent = String(state.mods.size);
+
+    const filled = [state.unit,state.mission,state.env,state.weather].filter(Boolean).length;
+    $('progressBadge').textContent = `${filled}/4`;
+
+    if(!r.ok){
+      $('eq').textContent = '—';
+      $('score').textContent = '0';
+      $('band').textContent = '—';
+      $('bandSub').textContent = t('fillRequired');
+      $('bandBadge').textContent = '—';
+      $('reco').innerHTML = '';
+      buildScale(0);
+      return;
+    }
+
+    $('eq').textContent = r.eq;
+    $('score').textContent = String(r.score);
+
+    const band = bandFor(r.score);
+    $('bandBadge').textContent = (band==='light')?t('band_light'):(band==='normal')?t('band_normal'):(band==='elev')?t('band_elev'):t('band_high');
+
+    const bandLabel = (band==='light')?t('band_light'):(band==='normal')?t('band_normal'):(band==='elev')?t('band_elev'):t('band_high');
+    $('band').textContent = `${bandLabel} (${r.score})`;
+
+    const bandSub = (band==='light')?t('bandSub_light'):(band==='normal')?t('bandSub_normal'):(band==='elev')?t('bandSub_elev'):t('bandSub_high');
+    $('bandSub').textContent = bandSub;
+
+    const ul = $('reco');
+    ul.innerHTML='';
+    recommendations(band).forEach(txt=>{
+      const li = document.createElement('li');
+      li.textContent = txt;
+      ul.appendChild(li);
+    });
+
+    buildScale(r.score);
+  }
+
+  // ---------------- Events ----------------
+  $('langBtn').addEventListener('click', ()=>{
+    lang = (lang==='en') ? 'fi' : 'en';
+    applyI18n();
+  });
+
+  $('resetBtn').addEventListener('click', ()=>{
+    state.unit=null; state.mission=null; state.env=null; state.weather=null; state.mods.clear();
+    // open first
+    ['d_unit','d_mission','d_env','d_weather','d_mod'].forEach(id=>{ const el=$(id); if(el) el.open = (id==='d_unit'); });
+    applyI18n();
+  });
+
+  // ---------------- Init ----------------
+  function buildReportText(){
+    const r = buildResult();
+    const band = bandFor(r.score);
+    const bandLabel = (band==='light')?t('band_light'):(band==='normal')?t('band_normal'):(band==='elev')?t('band_elev'):t('band_high');
+
+    const u = DATA.unitTypes[state.unit] ? (t(DATA.unitTypes[state.unit].labelKey) || DATA.unitTypes[state.unit].labelKey) : '-';
+    const m = DATA.missionTypes[state.mission] ? (t(DATA.missionTypes[state.mission].labelKey) || DATA.missionTypes[state.mission].labelKey) : '-';
+    const e = DATA.environments[state.env] ? (t(DATA.environments[state.env].labelKey) || DATA.environments[state.env].labelKey) : '-';
+    const w = DATA.weather[state.weather] ? (t(DATA.weather[state.weather].labelKey) || DATA.weather[state.weather].labelKey) : '-';
+
+    const mods = [];
+    DATA.modifiers.forEach((mod, idx)=>{ if(state.modifiers[idx]) mods.push(t(mod.labelKey)); });
+
+    const lines = [];
+    lines.push('KUORMA+');
+    lines.push('');
+    lines.push(`${t('unitType')}: ${u}`);
+    lines.push(`${t('missionType')}: ${m}`);
+    lines.push(`${t('environment')}: ${e}`);
+    lines.push(`${t('weather')}: ${w}`);
+    lines.push(`${t('modifiers')}: ${mods.length?mods.join(', '):'-'}`);
+    lines.push('');
+    lines.push(`${t('score')}: ${r.score}`);
+    lines.push(`${t('riskBand')}: ${bandLabel}`);
+    lines.push('');
+    lines.push(t('recommendations'));
+    (r.recos || []).forEach(x=> lines.push(`- ${x}`));
+    lines.push('');
+    lines.push(t('disclaimerShort'));
+    return lines.join('\n');
+  }
+
+  async function copyReport(){
+    try{
+      await navigator.clipboard.writeText(buildReportText());
+      toast(t('copied'));
+    }catch(err){
+      // Fallback for some mobile browsers
+      try{
+        const ta = document.createElement('textarea');
+        ta.value = buildReportText();
+        ta.setAttribute('readonly','');
+        ta.style.position='fixed';
+        ta.style.top='-9999px';
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        toast(t('copied'));
+      }catch(e){
+        toast(t('copyFailed'));
+      }
+    }
+  }
+
+  function bindExportButtons(){
+    const btnCopy = document.getElementById('btnCopy');
+    if(btnCopy) btnCopy.addEventListener('click', copyReport);
+
+    const btnPdf = document.getElementById('btnPdf');
+    if(btnPdf) btnPdf.addEventListener('click', ()=>window.print());
+  }
+
+  // ---------------- Init ----------------
+  renderAll();
+  applyI18n();
+  bindExportButtons();
+
+});
+/* ================== Load Budget V1 (UI adapter) ================== */
+(()=> {
+  const CONFIG = {
+    version: 1,
+    microblock: { pctBW: 2.5, uiStepPctBW: 5, uiStepMicro: 2 },
+    defaults: { bodyweightKg: 80, targetPctBW: 30, minBodyweightKg: 40, maxBodyweightKg: 200, minTargetPctBW: 10, maxTargetPctBW: 60 },
+    riskBands: [
+      { maxPct: 25, label: "GREEN",  note: "Optimal / sustainable." },
+      { maxPct: 35, label: "YELLOW", note: "Sustained strain likely." },
+      { maxPct: 45, label: "ORANGE", note: "Mobility loss likely." },
+      { maxPct: 999, label: "RED",   note: "Combat degradation likely." }
+    ],
+    categories: [
+      {
+        id:"protection", type:"profile",
+        selections:[
+          { id:"helmet", label:"Helmet", microCost:0, flags:["HELMET"] },
+          { id:"pc", label:"Plate carrier", microCost:2, flags:["PC"], locks:["heavy"] },
+          { id:"heavy", label:"Heavy armor", microCost:3, flags:["HEAVY_ARMOR"], locks:["pc"] }
+        ],
+        addons:[
+          { id:"pc_addons", label:"Armor add-ons", microCost:1, requiresAny:["pc","heavy"], flags:["ARMOR_ADDONS"] }
+        ]
+      },
+      { id:"medical", type:"stepper", capMicro:3, steps:[
+        { id:"med0", label:"None", microCost:0 },
+        { id:"med1", label:"IFAK", microCost:1 },
+        { id:"med2", label:"Enhanced IFAK", microCost:2 },
+        { id:"med3", label:"CLS pouch", microCost:3 }
+      ]},
+      { id:"ammo", type:"stepper", capStepIndex:5, steps:[
+        { id:"am1", label:"3", microCost:1, meta:{mags:3} },
+        { id:"am2", label:"6", microCost:2, meta:{mags:6} },
+        { id:"am3", label:"9", microCost:3, meta:{mags:9} },
+        { id:"am4", label:"12", microCost:4, meta:{mags:12} },
+        { id:"am5", label:"16", microCost:5, meta:{mags:16} },
+        { id:"am6", label:"20", microCost:6, meta:{mags:20} }
+      ]},
+      { id:"sustainment", type:"stepper", capMicro:8, steps:[
+        { id:"sus0", label:"None", microCost:0 },
+        { id:"sus1", label:"L1", microCost:2 },
+        { id:"sus2", label:"L2", microCost:4 },
+        { id:"sus3", label:"L3", microCost:6 },
+        { id:"sus4", label:"L4", microCost:8 }
+      ]},
+      { id:"comms_ew", type:"stepper", capMicro:4, steps:[
+        { id:"ce0", label:"None", microCost:0 },
+        { id:"ce1", label:"Basic", microCost:1, flags:["COMMS"] },
+        { id:"ce2", label:"EW", microCost:2, flags:["EW_FRICTION"] },
+        { id:"ce3", label:"High EW", microCost:3, flags:["EW_HIGH"] }
+      ]}
+    ],
+    rules: [
+      { id:"heavy_caps_ammo", when:{ hasFlags:["HEAVY_ARMOR"] }, then:{ capStepIndex:{ ammo:5 } } },
+      { id:"cold_min_sustainment", when:{ envAny:["COLD","WET_COLD"] }, then:{ minMicro:{ sustainment:2 } } },
+      { id:"limited_vehicle_support_tax", when:{ opsAny:["LIMITED_VEHICLE_SUPPORT"] }, then:{ addMicroTax:1 } },
+      { id:"casualty_min_med", when:{ opsAny:["HIGH_CASUALTY"] }, then:{ minMicro:{ medical:2 } } }
+    ]
+  };
+
+  const RULE_TEXT = {
+    fi: {
+      heavy_caps_ammo: "Heavy armor rajoittaa ammuksia (cap).",
+      cold_min_sustainment: "Kylmä lisää sustainment-minimiä.",
+      limited_vehicle_support_tax: "Rajoitettu ajoneuvotuki lisää yhteiskuormaa.",
+      casualty_min_med: "Korkea haavoittumisriski nostaa lääkintäminimiä."
+    },
+    en: {
+      heavy_caps_ammo: "Heavy armor limits ammunition (cap).",
+      cold_min_sustainment: "Cold increases sustainment minimum.",
+      limited_vehicle_support_tax: "Limited vehicle support adds overhead load.",
+      casualty_min_med: "High casualty expectation raises medical minimum."
+    }
+  };
+
+  const STATE = {
+    bodyweightKg: 80,
+    targetPctBW: 30,
+    selection: {
+      protection: { helmet:true, torso:null, addons:[] },
+      medical:"med1",
+      ammo:"am3",
+      sustainment:"sus2",
+      comms_ew:"ce0"
+    },
+    contextFlags: { env:[], ops:[] }
+  };
+
+  const lb$ = (id)=>document.getElementById(id);
+
+  function clamp(v,a,b){ v = Number(v); if(!Number.isFinite(v)) v=a; return Math.max(a, Math.min(b, v)); }
+  function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c=>({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;" }[c])); }
+
+  function ruleMatches(when, flags, envFlags, opsFlags){
+    if(!when) return true;
+    if(when.hasFlags && !when.hasFlags.every(f=>flags.has(f))) return false;
+    if(when.envAny && !when.envAny.some(f=>envFlags.has(f))) return false;
+    if(when.opsAny && !when.opsAny.some(f=>opsFlags.has(f))) return false;
+    return true;
+  }
+
+  function lbCompute(config, state){
+    const bw = clamp(state.bodyweightKg, config.defaults.minBodyweightKg, config.defaults.maxBodyweightKg);
+    const targetPct = clamp(state.targetPctBW, config.defaults.minTargetPctBW, config.defaults.maxTargetPctBW);
+    const microKg = bw * (config.microblock.pctBW/100);
+    const ceilingMicro = Math.round(targetPct / config.microblock.pctBW);
+
+    const catById = Object.fromEntries(config.categories.map(c=>[c.id,c]));
+    const flags = new Set();
+    const envFlags = new Set(state.contextFlags.env || []);
+    const opsFlags = new Set(state.contextFlags.ops || []);
+    envFlags.forEach(f=>flags.add(f));
+    opsFlags.forEach(f=>flags.add(f));
+
+    // protection
+    let protectionMicro = 0;
+    const prot = catById.protection;
+    const psel = state.selection.protection;
+    if(psel.helmet) (prot.selections.find(x=>x.id==="helmet")?.flags||[]).forEach(f=>flags.add(f));
+    if(psel.torso){
+      const torso = prot.selections.find(x=>x.id===psel.torso);
+      if(torso){ protectionMicro += torso.microCost||0; (torso.flags||[]).forEach(f=>flags.add(f)); }
+    }
+    for(const adId of (psel.addons||[])){
+      const ad = prot.addons.find(x=>x.id===adId);
+      if(!ad) continue;
+      if(ad.requiresAny && !ad.requiresAny.includes(psel.torso)) continue;
+      protectionMicro += ad.microCost||0;
+      (ad.flags||[]).forEach(f=>flags.add(f));
+    }
+
+    // stepper picks
+    const picked = {};
+    const stepCats = ["medical","ammo","sustainment","comms_ew"];
+    for(const cid of stepCats) picked[cid] = state.selection[cid];
+
+    const adj = { minMicro:{}, capStepIndex:{}, addMicroTax:0 };
+    const appliedRules = [];
+    for(const rule of (config.rules||[])){
+      if(!ruleMatches(rule.when, flags, envFlags, opsFlags)) continue;
+      appliedRules.push(rule.id);
+      if(rule.then?.minMicro) Object.assign(adj.minMicro, rule.then.minMicro);
+      if(rule.then?.capStepIndex) Object.assign(adj.capStepIndex, rule.then.capStepIndex);
+      if(typeof rule.then?.addMicroTax === "number") adj.addMicroTax += rule.then.addMicroTax;
+    }
+
+    let stepMicro = 0;
+    for(const cid of stepCats){
+      const cat = catById[cid]; if(!cat) continue;
+      const steps = cat.steps||[];
+      let idx = Math.max(0, steps.findIndex(s=>s.id===(picked[cid] || steps[0]?.id)));
+      if(idx<0) idx=0;
+
+      if(typeof adj.capStepIndex[cid] === "number") idx = Math.min(idx, adj.capStepIndex[cid]);
+      const minM = adj.minMicro[cid];
+      if(typeof minM === "number"){
+        while(idx < steps.length-1 && (steps[idx]?.microCost||0) < minM) idx++;
+      }
+      if(typeof cat.capMicro === "number"){
+        while(idx>0 && (steps[idx]?.microCost||0) > cat.capMicro) idx--;
+      }
+      if(typeof cat.capStepIndex === "number") idx = Math.min(idx, cat.capStepIndex);
+
+      picked[cid] = steps[idx]?.id || picked[cid];
+      stepMicro += steps[idx]?.microCost || 0;
+    }
+
+    const usedMicro = protectionMicro + stepMicro + adj.addMicroTax;
+    const usedPct = usedMicro * config.microblock.pctBW;
+    const usedKg = usedMicro * microKg;
+    const freeMicro = ceilingMicro - usedMicro;
+    const freeKg = freeMicro * microKg;
+    const band = config.riskBands.find(b=>usedPct<=b.maxPct) || config.riskBands[config.riskBands.length-1];
+
+    return { bw, targetPct, microKg, ceilingMicro, usedMicro, freeMicro, usedPct, usedKg, freeKg, band, picked, appliedRules, taxMicro: adj.addMicroTax };
+  }
+
+  function renderStepper(containerId, catId){
+    const cat = CONFIG.categories.find(c=>c.id===catId);
+    const wrap = lb$(containerId);
+    if(!cat || !wrap) return;
+    wrap.innerHTML = "";
+    for(const st of cat.steps){
+      const b = document.createElement("button");
+      b.type="button";
+      b.className="lbBtn";
+      b.textContent = st.label;
+      b.dataset.lbAct = "step";
+      b.dataset.lbCat = catId;
+      b.dataset.lbVal = st.id;
+      wrap.appendChild(b);
+    }
+  }
+
+  function applyContextFromMain(){
+    // reads KUORMA+ main tool "state" (unit/mission/env/weather/mods) if present
+    const env = (window.state && window.state.env) ? String(window.state.env) : "";
+    const weather = (window.state && window.state.weather) ? String(window.state.weather) : "";
+    const mods = (window.state && window.state.mods) ? window.state.mods : new Set();
+
+    const envFlags = [];
+    if(env === "arctic" || weather === "cold") envFlags.push("COLD");
+    if(weather === "wet" && (env === "arctic" || weather === "cold")) envFlags.push("WET_COLD");
+
+    const opsFlags = [];
+    if(mods && mods.has("noveh")) opsFlags.push("LIMITED_VEHICLE_SUPPORT");
+    if(mods && mods.has("cas")) opsFlags.push("HIGH_CASUALTY");
+
+    STATE.contextFlags.env = envFlags;
+    STATE.contextFlags.ops = opsFlags;
+
+    // Auto-bump comms if EW mod is selected
+    if(mods && mods.has("ew")){
+      const cur = STATE.selection.comms_ew;
+      if(cur === "ce0" || cur === "ce1") STATE.selection.comms_ew = "ce2";
+    }
+  }
+
+  function renderContext(appliedRules){
+    const el = lb$("lb-context-dynamic");
+    if(!el) return;
+    const lang = (window.lang === "en") ? "en" : "fi";
+    const textMap = RULE_TEXT[lang] || RULE_TEXT.fi;
+
+    if(!appliedRules || appliedRules.length===0){
+      el.innerHTML = `<span class="tag">${t("lbNoActiveContext")}</span>`;
+      return;
+    }
+    el.innerHTML = appliedRules
+      .map(id => `<span class="tag">${escapeHtml(textMap[id] || id)}</span>`)
+      .join("");
+  }
+
+  function refreshUI(){
+    applyContextFromMain();
+    const res = lbCompute(CONFIG, STATE);
+
+    // toggle states
+    const helmetBtn = document.querySelector('[data-lb-act="helmet"]');
+    if(helmetBtn) helmetBtn.classList.toggle("on", !!STATE.selection.protection.helmet);
+
+    document.querySelectorAll('[data-lb-act="torso"]').forEach(btn=>{
+      btn.classList.toggle("on", btn.dataset.lbVal === STATE.selection.protection.torso);
+    });
+
+    const addonBtn = document.querySelector('[data-lb-act="addon"][data-lb-val="pc_addons"]');
+    const hasTorso = !!STATE.selection.protection.torso;
+    if(addonBtn){
+      addonBtn.disabled = !hasTorso;
+      addonBtn.style.opacity = hasTorso ? "1" : ".45";
+      addonBtn.classList.toggle("on", (STATE.selection.protection.addons||[]).includes("pc_addons") && hasTorso);
+    }
+
+    document.querySelectorAll('[data-lb-act="step"]').forEach(btn=>{
+      const cat = btn.dataset.lbCat;
+      btn.classList.toggle("on", STATE.selection[cat] === btn.dataset.lbVal);
+    });
+
+    lb$("lb-used").textContent = `${res.usedPct.toFixed(1)}% (~${res.usedKg.toFixed(1)} kg)`;
+    lb$("lb-free").textContent = `${(res.freeMicro*CONFIG.microblock.pctBW).toFixed(1)}% (~${res.freeKg.toFixed(1)} kg)`;
+    const bandEmoji = ({GREEN:"🟢",YELLOW:"🟡",ORANGE:"🟠",RED:"🔴"}[res.band?.label] || "⚪");
+    const bandEl = lb$("lb-band");
+    if(bandEl){
+      const noteKey = "lbBand_" + (res.band?.label || "");
+      const bandNote = (typeof t === "function" ? (t(noteKey) || res.band?.note || "") : (res.band?.note || ""));
+      const label = (res.band?.label || "—");
+      bandEl.textContent = `${bandEmoji} ${label}${bandNote ? " — " + bandNote : ""}`;
+      bandEl.className = `lbBand lbBand-${label}`;
+    }
+
+    lb$("lb-microhint").textContent = `1 microblock = ${CONFIG.microblock.pctBW}% BW ≈ ${res.microKg.toFixed(2)} kg @ ${res.bw} kg. UI steps are 5%.`;
+    lb$("lb-explain").textContent = `Used microblocks: ${res.usedMicro} / ceiling ${res.ceilingMicro}. ${res.taxMicro?("Overhead tax: +"+res.taxMicro+" micro. "):""}`;
+
+    renderContext(res.appliedRules);
+  }
+
+  function init(){
+    // render steppers
+    renderStepper("lb-med", "medical");
+    renderStepper("lb-ce", "comms_ew");
+    renderStepper("lb-ammo", "ammo");
+    renderStepper("lb-sus", "sustainment");
+
+    // inputs
+    lb$("lb-bw").addEventListener("input", (e)=>{ STATE.bodyweightKg = clamp(e.target.value, 40, 200); refreshUI(); });
+    lb$("lb-target").addEventListener("input", (e)=>{ STATE.targetPctBW = clamp(e.target.value, 10, 60); refreshUI(); });
+
+    // button handling
+    document.getElementById("budgetPanel").addEventListener("click", (e)=>{
+      const btn = e.target.closest("button.lbBtn");
+      if(!btn) return;
+
+      const act = btn.dataset.lbAct;
+      if(act === "helmet"){
+        STATE.selection.protection.helmet = !STATE.selection.protection.helmet;
+      } else if(act === "torso"){
+        const v = btn.dataset.lbVal;
+        // one-of: toggle off if same
+        STATE.selection.protection.torso = (STATE.selection.protection.torso === v) ? null : v;
+        // clear addons if no torso
+        if(!STATE.selection.protection.torso) STATE.selection.protection.addons = [];
+      } else if(act === "addon"){
+        const v = btn.dataset.lbVal;
+        const arr = new Set(STATE.selection.protection.addons || []);
+        if(arr.has(v)) arr.delete(v); else arr.add(v);
+        STATE.selection.protection.addons = Array.from(arr);
+      } else if(act === "step"){
+        const cat = btn.dataset.lbCat;
+        const v = btn.dataset.lbVal;
+        STATE.selection[cat] = v;
+      }
+
+      refreshUI();
+    });
+
+    // Try to stay in sync with main tool updates
+    if(typeof window.update === "function"){
+      const orig = window.update;
+      window.update = function(){
+        const r = orig.apply(this, arguments);
+        try{ refreshUI(); }catch(_){}
+        return r;
+      };
+    }
+
+    refreshUI();
+  }
+
+  window.addEventListener("load", init);
+})();
+
+</script>
+</body>
+</html>
